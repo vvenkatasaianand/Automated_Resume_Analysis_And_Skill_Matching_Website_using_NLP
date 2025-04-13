@@ -33,3 +33,27 @@
 <img src="Documentations/Screens/User Screens/4. Upload Resume Page.png" alt="project-screenshot" >
 
 <img src="Documentations/Screens/User Screens/5. Congratulations alert .png" alt="project-screenshot" >
+
+
+  
+<h2>🧐 Features</h2>
+
+Here're some of the project's best features:
+
+*   Automated Resume Screening: Eliminates the need for manual screening reducing human error and bias.
+*   Efficient Candidate Shortlisting: Quickly narrows down the pool of applicants by ranking candidates based on skill relevance.
+*   Accurate Skill Matching: Uses advanced NLP and ML techniques to match candidates' skills with job descriptions accurately.
+*   Bias Reduction: Objective algorithms help minimize human biases in recruitment decisions.
+*   Time and Cost Efficiency: Speeds up the recruitment process and reduces the cost associated with manual screening.
+*   Real-time Application Status Updates: Keeps candidates informed about their status throughout the recruitment process.
+*   Scalability: Can easily handle large volumes of applicants making it suitable for largescale recruitment campaigns
+
+  
+  
+<h2>💻 Built with</h2>
+
+Technologies used in the project:
+
+*   Django
+*   MYSQL
+*   Scapy
