@@ -1,0 +1,235 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - View Feedback</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: #FAFCFE;
+			font-family: sans-serif;
+		}
+
+		.content {
+			display: grid;
+			grid-template-columns: 1fr;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		}
+
+		.form-container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+
+		.image-container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background-color: var(--bg-color);
+			text-align: center;
+		}
+
+		.image-container img {
+			height: auto;
+			max-width: 30em;
+			margin-bottom: 2em;
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		[type="checkbox"]:checked,
+		[type="checkbox"]:not(:checked) {
+			position: absolute;
+			left: -9999px;
+		}
+
+		.menu-icon:checked+label,
+		.menu-icon:not(:checked)+label {
+			position: fixed;
+			top: 63px;
+			right: 75px;
+			display: block;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			z-index: 10;
+		}
+
+		/* ... (rest of the menu icon styles from UserScreen.html) ... */
+
+		.gradient-button {
+			position: relative;
+			padding: 10px 20px;
+			font-size: 14px;
+			border: none;
+			border-radius: 25px;
+			background-color: white;
+			color: #333;
+			cursor: pointer;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			margin: 5px;
+			text-decoration: none;
+		}
+
+		.gradient-button::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 3px;
+			background: linear-gradient(90deg, #5146BF, #F5FEFD, #5146BF);
+			background-size: 300% 100%;
+			-webkit-mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: moveBorder 2s linear infinite alternate;
+		}
+
+		@keyframes moveBorder {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			100% {
+				background-position: 100% 50%;
+			}
+		}
+
+		.gradient-button:hover {
+			transform: scale(1.02);
+			transition: transform 0.2s ease-in-out;
+		}
+
+		.button-row {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			transition: none;
+			gap: 30px;
+		}
+
+		.feedback-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.feedback-list li {
+			background-color: var(--accent-color-2);
+			border: 1px solid var(--accent-color-1);
+			margin-bottom: 10px;
+			padding: 15px;
+			border-radius: 5px;
+		}
+
+		.feedback-list li h3 {
+			margin-top: 0;
+			color: var(--primary-color);
+		}
+
+		.feedback-list li p {
+			margin-bottom: 5px;
+			text-align: left;
+		}
+
+		.feedback-list li strong {
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<div class="button-row">
+			<a href="{% url 'AdminDashboard' %}" class="gradient-button">Admin Dashboard</a>
+			<a href="{% url 'PostJobs' %}" class="gradient-button">Post Jobs</a>
+			<a href="{% url 'AllViewScore' %}" class="gradient-button">View All Resume's</a>
+			<a href="{% url 'ViewFeedback' %}" class="gradient-button">View Feedback</a>
+			<a href="{% url 'home' %}" class="gradient-button"
+				style="color: whitesmoke; background-color: #5146BF;">Logout</a>
+		</div>
+		<div class="container mt-4">
+			<div class="row justify-content-center">
+				<div class="content">
+					<div class="form-container">
+						<center>
+							<h3><b>User Feedback</b></h3>
+							<img src="{{ chart }}" alt="Feedback Ranking Chart">
+
+							{% if Feedback_list %}
+							<h2><b>User Feedbacks:</b>
+							</h2>
+
+							<ul class="feedback-list">
+								{% for feedback in Feedback_list %}
+								<li>
+									<h3>{{ feedback.username }}</h3>
+									<p><strong>Score:</strong> {{ feedback.feedback_rank }}</p>
+									<p><strong>Feedback:</strong> {{ feedback.feedback_text }}</p>
+								</li>
+								{% endfor %}
+							</ul>
+							{% endif %}
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,722 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - User Screen</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+			--border-color: var(--primary-color);
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: #FAFCFE;
+			font-family: sans-serif;
+		}
+
+		.content {
+			display: grid;
+			grid-template-columns: 1fr;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		}
+
+		.form-container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		.gradient-button {
+			position: relative;
+			padding: 10px 20px;
+			font-size: 14px;
+			border: none;
+			border-radius: 25px;
+			background-color: white;
+			color: #333;
+			cursor: pointer;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			margin: 5px;
+			text-decoration: none;
+		}
+
+		.gradient-button::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 3px;
+			background: linear-gradient(90deg, #5146BF, #F5FEFD, #5146BF);
+			background-size: 300% 100%;
+			-webkit-mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+			mask: linear-gradient(white 0 0) content-box, linear-gradient(white 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: moveBorder 2s linear infinite alternate;
+		}
+
+		@keyframes moveBorder {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			100% {
+				background-position: 100% 50%;
+			}
+		}
+
+		.gradient-button:hover {
+			transform: scale(1.05);
+			transition: transform 0.2s ease-in-out;
+		}
+
+		.button-row {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			transition: none;
+			gap: 30px;
+		}
+
+		.job-list-container {
+			background-color: var(--background);
+			color: var(--primary-color);
+			font-family: sans-serif;
+			padding: 20px;
+			line-height: 1.6;
+		}
+
+		.job-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.job-list li {
+			background-color: var(--accent-color-2);
+			border: 2px dashed var(--border-color);
+			margin-bottom: 20px;
+			padding: 25px;
+			border-radius: 0;
+			box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.job-list li:hover {
+			transform: scale(1.02);
+			box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		.job-list li h3 {
+			margin-top: 0;
+			color: var(--primary-color);
+			font-size: 1.5em;
+			text-transform: uppercase;
+			letter-spacing: 1px;
+			border-bottom: 1px solid var(--border-color);
+			padding-bottom: 10px;
+		}
+
+		.job-list li p {
+			margin-bottom: 10px;
+			text-align: left;
+			font-size: 1em;
+		}
+
+		.job-list li strong {
+			font-weight: 900;
+			color: var(--secondary-color);
+		}
+
+		.table_class {
+			border-collapse: collapse;
+			margin: 25px 0;
+			font-size: 0.9em;
+			font-family: sans-serif;
+			min-width: 400px;
+			border: #333;
+			border-collapse: collapse;
+			box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		}
+
+		/* // welcome USER css - start */
+
+		/* CSS for hello GIF - start */
+		#congrats-gif-container {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		#congrats-gif-container .gif-container {
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			overflow: hidden;
+			margin: 0 auto;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		#congrats-gif-container .gif-container img {
+			width: 100%;
+			height: 100%;
+			transform: scale(1.2);
+			object-fit: cover;
+		}
+
+		#gif-placeholder {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		/* CSS for hello GIF - end */
+
+		.welcome-container {
+			background-color: var(--background);
+			padding: 20px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.2);
+		}
+
+		.welcome-text {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			font-size: 28px;
+			color: #333;
+			font-weight: 600;
+		}
+
+		#user-name {
+			color: #202f79;
+			font-weight: 700;
+			white-space: nowrap;
+			overflow: hidden;
+			border-right: .15em solid #202f79;
+			animation: typing 2s steps(20, end) forwards, blink-caret .75s step-end infinite;
+			text-transform: uppercase;
+		}
+
+		@keyframes typing {
+			from {
+				width: 0;
+			}
+
+			to {
+				width: 100%;
+			}
+		}
+
+		@keyframes blink-caret {
+
+			from,
+			to {
+				border-color: transparent
+			}
+
+			50% {
+				border-color: #202f79;
+			}
+		}
+
+		/* // welcome USER css - start */
+
+		/* available-jobs-section css -start */
+
+		.available-jobs-section .apply-jobs-card {
+			position: relative;
+			width: 350px;
+			/* Fixed card width */
+			height: 470px;
+			background: var(--accent-color-2);
+			border-radius: 20px;
+			overflow: hidden;
+			margin: 15px;
+			/* Adjust margin for spacing */
+			color: var(--primary-color);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			display: flex;
+			/* Use flexbox for content layout */
+			flex-direction: column;
+			/* Stack content vertically */
+		}
+
+		/* Adjust grid columns for card spacing */
+		.available-jobs-section .col-md-4 {
+			width: 33.33%;
+			/* 3 cards per row on medium screens */
+			padding: 5px;
+			/* Add padding for spacing */
+		}
+
+		.available-jobs-section .col-sm-6 {
+			width: 50%;
+			/* 2 cards per row on small screens */
+			padding: 5px;
+		}
+
+		.available-jobs-section .apply-jobs-contentBx {
+			flex-grow: 1;
+			/* Allow content box to take up remaining space */
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			/* Distribute content evenly */
+		}
+
+		.available-jobs-section .apply-jobs-card:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: var(--accent-color-1);
+			clip-path: circle(150px at 80% 20%);
+			transition: 0.5s ease-in-out;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover:before {
+			clip-path: circle(300px at 80% -20%);
+		}
+
+		.available-jobs-section .apply-jobs-card:after {
+			content: 'Job';
+			position: absolute;
+			top: 30%;
+			left: -20%;
+			font-size: 12em;
+			font-weight: 800;
+			font-style: italic;
+			/* color: rgba(255, 255, 25, 0.05); */
+			color: var(--bg-color);
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-logo {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			z-index: 10001;
+			width: 60px;
+			height: 60px;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-logo img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-imgBx {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 10000;
+			width: 100%;
+			height: 220px;
+			transition: 0.5s;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover .apply-jobs-imgBx {
+			/* max-width: 50%; */
+			top: 0%;
+			transform: translateY(0%);
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-imgBx img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			border-radius: 50%;
+			/* transform: translate(-50%, -50%) rotate(-25deg);
+			width: 270px; */
+			transform: translate(-50%, -50%);
+			width: auto;
+			/* Allow image to scale proportionally */
+			max-width: 60%;
+			/* Limit the maximum width of the image */
+			height: auto;
+			/* Ensure height scales proportionally */
+			transition: transform 0.5s ease, max-width 0.5s ease, top 0.5s ease;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover .apply-jobs-imgBx img {
+			max-width: 50%;
+			/* Decreased width on hover */
+			top: 30%;
+			/* Moved image up on hover */
+			transform: translate(-50%, 0);
+			/* Adjust transform for new top position */
+		}
+
+
+
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 100px;
+			text-align: center;
+			transition: 1s;
+			z-index: 10;
+			text-rendering: optimizeLegibility;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover .apply-jobs-contentBx {
+			height: 210px;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx h2 {
+			position: relative;
+			font-weight: 600;
+			letter-spacing: 1px;
+			color: var(--primary-color);
+			margin: 0;
+			font-size: 1.5em;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx .apply-jobs-details {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 8px 20px;
+			transition: 0.5s;
+			opacity: 0;
+			visibility: hidden;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover .apply-jobs-contentBx .apply-jobs-details {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: 0.5s;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx .apply-jobs-details h3 {
+			color: var(--primary-color);
+			font-weight: 300;
+			font-size: 16px;
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			margin-right: 10px;
+			line-height: 1.4;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx .apply-jobs-details span {
+			font-size: 16px;
+			color: var(--primary-color);
+			line-height: 1.4;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-contentBx a {
+			display: inline-block;
+			padding: 10px 20px;
+			background: #fff;
+			border-radius: 4px;
+			margin-top: 10px;
+			text-decoration: none;
+			font-weight: 600;
+			color: var(--primary-color);
+			opacity: 0;
+			transform: translateY(50px);
+			transition: 0.5s;
+			margin-top: 0;
+		}
+
+		.available-jobs-section .apply-jobs-card:hover .apply-jobs-contentBx a {
+			opacity: 1;
+			transform: translateY(0px);
+			transition-delay: 0.75s;
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-button a {
+			display: block;
+			/* Make the anchor tag a block-level element */
+			width: 100%;
+			/* Set the width to 100% of the parent container */
+			text-align: center;
+			/* Center the text within the button */
+			padding: 10px 0;
+			/* Add padding for visual appeal */
+			box-sizing: border-box;
+			/* Include padding and border in the element's total width and height */
+
+		}
+
+		.available-jobs-section .apply-jobs-card .apply-jobs-button a:hover {
+			background-color: var(--primary-color);
+			color: white;
+			transition: background-color 0.1s ease, color 0.1s ease;
+		}
+
+		.apply-jobs-card .selected-tag {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: #E8F8E8;
+			color: var(--primary-color);
+			padding: 5px 10px;
+			border-radius: 20px;
+			font-size: 18px
+		}
+
+		.apply-jobs-card .rejected-tag {
+			position: absolute;
+			top: 10px;
+			right: 10px;
+			background: hsla(358, 98%, 66%, 0.651);
+			color: var(--primary-color);
+			padding: 5px 10px;
+			border-radius: 20px;
+			font-size: 18px
+		}
+	</style>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<div class="button-row">
+			<a href="{% url 'UserDashboard' %}" class="gradient-button">Dashboard</a>
+			<a href="{% url 'ViewJobs' %}" class="gradient-button">View Available Jobs</a>
+			<a href="{% url 'home' %}" class="gradient-button"
+				style="color: whitesmoke; background-color: #5146BF;">Logout</a>
+		</div>
+		<div class="container mt-4">
+			<div class="row">
+				<div class="col-md-12 col-lg-12 content">
+					<div class="form-container">
+						<center>
+							{% if C_username %}
+							<h2><b>User Dashboard </b></h2>
+
+							<div id="congrats-gif-container" style="text-align: center; margin-bottom: 20px;">
+								<div class="ilustration">
+									<div class="gif-container">
+										<img src="{% static 'gifs/welcome.gif' %}" background-color="transparent"
+											alt="Hello GIF">
+									</div>
+								</div>
+							</div>
+
+							<div class="welcome-container">
+								<h1 class="welcome-text">Welcome, <span id="user-name"></span>!</h1>
+							</div>
+							{% endif %}
+
+							<p class="text-danger">{{ data|safe }}</p>
+
+
+							{% if resume_upload_status_message %}
+							{% if resume_upload_status %}
+
+
+							<p class="text-danger">{{ resume_upload_status_message }}</p>
+
+							{% else %}
+							<p class="text-danger">Not {{ resume_upload_status_message }}</p>
+							{% endif %}
+							{% endif %}
+
+
+							{% if Available_jobs %}
+							<h2><b>Available Jobs </b></h2>
+							<div class="available-jobs-section row"> {% for job in Available_jobs %}
+								<div class="col-md-4 col-sm-6 mb-4">
+									<div class="apply-jobs-card">
+										<div class="apply-jobs-logo">
+											<img src="{% static 'images/jobcardlogo/company_logo.png' %}"
+												alt="Company Logo">
+										</div>
+										<div class="apply-jobs-imgBx">
+											<img src="" alt="{{ job.job_logo_name }} Logo">
+										</div>
+										<div class="apply-jobs-contentBx">
+											<h2>{{ job.title }}</h2>
+											<div class="apply-jobs-details">
+												<h3>Company:</h3>
+												<span>{{ job.company }}</span>
+											</div>
+											<div class="apply-jobs-details">
+												<h3>Salary:</h3>
+												<span>{{ job.salary|safe }}</span>
+											</div>
+											<div class="apply-jobs-details">
+												<h3>Skills:</h3>
+												<span>{{ job.skills_required|safe }}</span>
+											</div>
+											<div class="apply-jobs-button">
+												<a href="UploadResume?t1={{ job.job_id }}&title={{ job.title }}">Apply
+													Now</a>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+							{% endif %}
+						</center>
+
+						{% if User_jobs %}
+						<center>
+							<h3 style="margin-top: 40px;"><b>My Applied Jobs </b></h3>
+
+							<div class="row">
+								<div class="col-md-12 col-lg-12">
+									<div class="available-jobs-section row"> {% for job in User_jobs %}
+										<div class="col-md-4 col-sm-6 mb-4">
+											<div class="apply-jobs-card"
+												style="background-color: {% if job.selected == 1 %}#E8F8E8{% elif job.selected == -1 %}var(--accent-color-2){% else %}hsla(358, 98%, 66%, 0.651){% endif %};">
+												{% if job.selected == 1 %}
+												<div class="selected-tag"><b>SELECTED</b></div>
+												{% elif job.selected == 0 %}
+												<div class="rejected-tag"><b>REJECTED</b></div>
+												{% endif %}
+												<div class="apply-jobs-logo">
+													<img src="{% static 'images/jobcardlogo/company_logo.png' %}"
+														alt="Company Logo">
+												</div>
+												<div class="apply-jobs-imgBx">
+													<img src="" alt="{{ job.job_logo_name }} Logo">
+												</div>
+												<div class="apply-jobs-contentBx">
+													<h2>{{ job.title }}</h2>
+													<div class="apply-jobs-details">
+														<h3>Company:</h3>
+														<span>{{ job.company }}</span>
+													</div>
+													<div class="apply-jobs-details">
+														<h3>Salary:</h3>
+														<span>{{ job.salary|safe }}</span>
+													</div>
+													<div class="apply-jobs-details">
+														<h3>Skills:</h3>
+														<span>{{ job.skills_required|safe }}</span>
+													</div>
+													<div class="apply-jobs-details">
+														<h3>Resume Score:</h3>
+														<span>{{ job.resume_score|safe }}</span>
+													</div>
+												</div>
+											</div>
+										</div>
+										{% endfor %}
+									</div>
+								</div>
+							</div>
+						</center>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		const userName = "{{ C_username|safe }}";
+		console.log(userName);
+		const nameSpan = document.getElementById("user-name");
+		const STATIC_URL = "{% static '' %}";
+
+		if (userName) {
+			function typeWriter(text, i = 0) {
+				if (i < text.length) {
+					nameSpan.textContent += text.charAt(i);
+					setTimeout(() => typeWriter(text, i + 1), 200);
+				} else {
+					setTimeout(() => {
+						backspace(text);
+					}, 3000);
+				}
+			}
+
+			function backspace(text, i = text.length) {
+				if (i > 0) {
+					nameSpan.textContent = text.substring(0, i - 1);
+					setTimeout(() => backspace(text, i - 1), 100);
+				} else {
+					setTimeout(() => typeWriter(text), 200);
+				}
+			}
+
+			typeWriter(userName);
+		}
+
+		function getImagePath(jobLogoName) {
+			if (!jobLogoName) {
+				return STATIC_URL + "images/jobcardlogo/default.png";
+			}
+
+			const sanitizedFilename = jobLogoName
+				.toLowerCase()
+				.replace(/ /g, "-")
+				.replace(/[^a-z0-9-]/g, "");
+
+			return STATIC_URL + "images/jobcardlogo/" + jobLogoName;
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const jobCards = document.querySelectorAll('.apply-jobs-card');
+
+			jobCards.forEach(card => {
+				const logoNameElement = card.querySelector('.apply-jobs-imgBx img');
+				if (logoNameElement) {
+					const logoName = logoNameElement.alt.replace(' Logo', '');
+					const imagePath = getImagePath(logoName);
+					logoNameElement.src = imagePath;
+
+					// Debugging: Check the logoName and imagePath
+					console.log("Logo Name:", logoName);
+					console.log("Image Path:", imagePath);
+				}
+			});
+		});
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,40 @@
+CREATE DATABASE resumeanalysis;
+USE resumeanalysis;
+
+CREATE TABLE feedback (
+    username VARCHAR(50),
+    feedback VARCHAR(200),
+    feedback_date DATETIME DEFAULT NULL,
+    feedback_rank VARCHAR(10) DEFAULT NULL
+);
+
+CREATE TABLE postjob (
+    job_id INT(11) NOT NULL PRIMARY KEY,
+    job_name VARCHAR(50) DEFAULT NULL,
+    job_details VARCHAR(200) DEFAULT NULL,
+    skills VARCHAR(400) DEFAULT NULL,
+    post_date DATETIME DEFAULT NULL,
+    company_name VARCHAR(50) DEFAULT NULL,
+    salary VARCHAR(20) DEFAULT NULL
+);
+
+CREATE TABLE signup (
+    username VARCHAR(50) NOT NULL PRIMARY KEY,
+    password VARCHAR(50) DEFAULT NULL,
+    contact_no VARCHAR(12) DEFAULT NULL,
+    email_id VARCHAR(50) DEFAULT NULL,
+    address VARCHAR(50) DEFAULT NULL
+);
+
+CREATE TABLE upload_resume (
+    job_id INT(11) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    resume_name VARCHAR(50) DEFAULT NULL,
+    upload_date DATETIME DEFAULT NULL,
+    selected TINYINT(1) DEFAULT NULL,
+    resume_json VARCHAR(500) DEFAULT NULL,
+    resume_score VARCHAR(30) DEFAULT NULL,
+    PRIMARY KEY (job_id, username),
+    FOREIGN KEY (job_id) REFERENCES postjob(job_id) ON DELETE CASCADE,
+    FOREIGN KEY (username) REFERENCES signup(username) ON DELETE CASCADE
+);

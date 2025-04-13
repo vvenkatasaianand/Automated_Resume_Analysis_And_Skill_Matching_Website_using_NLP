@@ -1,0 +1,1208 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - Admin Screen</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: var(--background);
+			font-family: sans-serif;
+		}
+
+		.content {
+			display: grid;
+			grid-template-columns: 1fr;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		}
+
+		.form-container {
+			background-color: var(--accent-color-2);
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+
+		.image-container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background-color: var(--bg-color);
+			text-align: center;
+		}
+
+		.image-container img {
+			height: auto;
+			max-width: 30em;
+			margin-bottom: 2em;
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		[type="checkbox"]:checked,
+		[type="checkbox"]:not(:checked) {
+			position: absolute;
+			left: -9999px;
+		}
+
+		.menu-icon:checked+label,
+		.menu-icon:not(:checked)+label {
+			position: fixed;
+			top: 63px;
+			right: 75px;
+			display: block;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			z-index: 10;
+		}
+
+		/* ... (rest of the menu icon styles from UserScreen.html) ... */
+
+		.gradient-button {
+			position: relative;
+			padding: 10px 20px;
+			font-size: 14px;
+			border: none;
+			border-radius: 25px;
+			background-color: white;
+			color: #333;
+			cursor: pointer;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			margin: 5px;
+			text-decoration: none;
+		}
+
+		.gradient-button::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 3px;
+			background: linear-gradient(90deg, #5146BF, #F5FEFD, #5146BF);
+			background-size: 300% 100%;
+			-webkit-mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: moveBorder 2s linear infinite alternate;
+		}
+
+		@keyframes moveBorder {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			100% {
+				background-position: 100% 50%;
+			}
+		}
+
+		.gradient-button:hover {
+			transform: scale(1.02);
+			transition: transform 0.2s ease-in-out;
+		}
+
+		.button-row {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			transition: none;
+			gap: 30px;
+		}
+
+		/*  jobs list css - start */
+
+		.job-list-container {
+			background-color: var(--background);
+			color: var(--primary-color);
+			font-family: sans-serif;
+			padding: 20px;
+			line-height: 1.6;
+		}
+
+		.job-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.job-list li {
+			background-color: var(--accent-color-2);
+			border: 2px dashed var(--border-color);
+			/* Dashed, for that extra edge of unease */
+			margin-bottom: 20px;
+			padding: 25px;
+			border-radius: 0;
+			/* Sharp, no comfort here */
+			box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+			/* Subtle, but noticeable shadow */
+			transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+
+		.job-list li:hover {
+			transform: scale(1.02);
+			/* A slight, unsettling movement */
+			box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.2);
+		}
+
+		.job-list li h3 {
+			margin-top: 0;
+			color: var(--primary-color);
+			font-size: 1.5em;
+			text-transform: uppercase;
+			/* For maximum impact */
+			letter-spacing: 1px;
+			border-bottom: 1px solid var(--border-color);
+			/* Added border to divide the pain */
+			padding-bottom: 10px;
+		}
+
+		.job-list li p {
+			margin-bottom: 10px;
+			text-align: left;
+			font-size: 1em;
+		}
+
+		.job-list li strong {
+			font-weight: 900;
+			/* Extra bold, to emphasize the dread */
+			color: var(--secondary-color);
+			/* That sickly yellow again */
+		}
+
+		/* jobs list css - end */
+
+		/* // welcome Admin css - start */
+
+		/* CSS for GIF - start */
+		#congrats-gif-container {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		#congrats-gif-container .gif-container {
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			overflow: hidden;
+			margin: 0 auto;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		#congrats-gif-container .gif-container img {
+			width: 100%;
+			height: 100%;
+			transform: scale(1);
+			object-fit: cover;
+		}
+
+		#gif-placeholder {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		/* CSS for GIF - end */
+
+		.welcome-container {
+			background-color: var(--background);
+			padding: 20px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			box-shadow: 0 4px 8px -3px rgba(0, 0, 0, 0.2);
+
+		}
+
+		.welcome-text {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			font-size: 28px;
+			color: #333;
+			font-weight: 600;
+		}
+
+		#user-name {
+			color: var(--primary-color);
+			font-weight: 700;
+			white-space: nowrap;
+			overflow: hidden;
+			border-right: .15em solid var(--primary-color);
+			animation: typing 2s steps(20, end) forwards,
+				blink-caret .75s step-end infinite;
+			text-transform: uppercase;
+		}
+
+		@keyframes typing {
+			from {
+				width: 0;
+			}
+
+			to {
+				width: 100%;
+			}
+		}
+
+		@keyframes blink-caret {
+
+			from,
+			to {
+				border-color: transparent
+			}
+
+			50% {
+				border-color: #202f79;
+			}
+		}
+
+		/* // welcome Admin css - end*/
+
+		/* available jobs css - start */
+
+		.available-jobs-section .admin-job-card {
+			position: relative;
+			z-index: 1;
+			width: 350px;
+			/* Fixed card width */
+			height: 470px;
+			background: var(--accent-color-2);
+			border-radius: 20px;
+			overflow: hidden;
+			margin: 15px;
+			/* Adjust margin for spacing */
+			color: var(--primary-color);
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			display: flex;
+			/* Use flexbox for content layout */
+			flex-direction: column;
+			/* Stack content vertically */
+		}
+
+		/* Adjust grid columns for card spacing */
+		.available-jobs-section .col-md-4 {
+			width: 33.33%;
+			/* 3 cards per row on medium screens */
+			padding: 5px;
+			/* Add padding for spacing */
+		}
+
+		.available-jobs-section .col-sm-6 {
+			width: 50%;
+			/* 2 cards per row on small screens */
+			padding: 5px;
+		}
+
+		.available-jobs-section .admin-jobs-contentBx {
+			flex-grow: 1;
+			/* Allow content box to take up remaining space */
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			/* Distribute content evenly */
+		}
+
+		.available-jobs-section .admin-job-card:before {
+			content: '';
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: var(--accent-color-1);
+			clip-path: circle(150px at 80% 20%);
+			transition: 0.5s ease-in-out;
+		}
+
+		.available-jobs-section .admin-job-card:hover:before {
+			clip-path: circle(300px at 80% -20%);
+		}
+
+		.available-jobs-section .admin-job-card:after {
+			content: 'Job';
+			position: absolute;
+			top: 30%;
+			left: -20%;
+			font-size: 12em;
+			font-weight: 800;
+			font-style: italic;
+			/* color: rgba(255, 255, 25, 0.05); */
+			color: var(--bg-color);
+		}
+
+		.available-jobs-section .admin-job-card .admin-job-logo {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			z-index: 10001;
+			width: 60px;
+			height: 60px;
+		}
+
+		.available-jobs-section .admin-job-card .admin-job-logo img {
+			width: 100%;
+			height: 100%;
+			object-fit: contain;
+		}
+
+		.available-jobs-section .admin-job-card .apply-jobs-imgBx {
+			position: absolute;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 10000;
+			width: 100%;
+			height: 220px;
+			transition: 0.5s;
+		}
+
+		.available-jobs-section .admin-job-card:hover .apply-jobs-imgBx {
+			/* max-width: 50%; */
+			top: 0%;
+			transform: translateY(0%);
+		}
+
+		.available-jobs-section .admin-job-card .apply-jobs-imgBx img {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			border-radius: 50%;
+			/* transform: translate(-50%, -50%) rotate(-25deg);
+			width: 270px; */
+			transform: translate(-50%, -50%);
+			width: auto;
+			/* Allow image to scale proportionally */
+			max-width: 60%;
+			/* Limit the maximum width of the image */
+			height: auto;
+			/* Ensure height scales proportionally */
+			transition: transform 0.5s ease, max-width 0.5s ease, top 0.5s ease;
+		}
+
+		.available-jobs-section .admin-job-card:hover .apply-jobs-imgBx img {
+			max-width: 50%;
+			/* Decreased width on hover */
+			top: 30%;
+			/* Moved image up on hover */
+			transform: translate(-50%, 0);
+			/* Adjust transform for new top position */
+		}
+
+
+
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx {
+			position: absolute;
+			bottom: 0;
+			width: 100%;
+			height: 100px;
+			text-align: center;
+			transition: 1s;
+			z-index: 10;
+			text-rendering: optimizeLegibility;
+			-webkit-font-smoothing: antialiased;
+		}
+
+		.available-jobs-section .admin-job-card:hover .admin-jobs-contentBx {
+			height: 210px;
+		}
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx h2 {
+			position: relative;
+			font-weight: 600;
+			letter-spacing: 1px;
+			color: var(--primary-color);
+			margin: 0;
+			font-size: 1.5em;
+		}
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx .admin-jobs-details {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 8px 20px;
+			transition: 0.5s;
+			opacity: 0;
+			visibility: hidden;
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		.available-jobs-section .admin-job-card:hover .admin-jobs-contentBx .admin-jobs-details {
+			opacity: 1;
+			visibility: visible;
+			transition-delay: 0.5s;
+		}
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx .admin-jobs-details h3 {
+			color: var(--primary-color);
+			font-weight: 300;
+			font-size: 16px;
+			text-transform: uppercase;
+			letter-spacing: 2px;
+			margin-right: 10px;
+			line-height: 1.4;
+		}
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx .admin-jobs-details span {
+			font-size: 16px;
+			color: var(--primary-color);
+			line-height: 1.4;
+		}
+
+		.available-jobs-section .admin-job-card .admin-jobs-contentBx a {
+			display: inline-block;
+			padding: 10px 20px;
+			background: #fff;
+			border-radius: 4px;
+			margin-top: 10px;
+			text-decoration: none;
+			font-weight: 600;
+			color: var(--primary-color);
+			opacity: 0;
+			transform: translateY(50px);
+			transition: 0.5s;
+			margin-top: 0;
+		}
+
+		.available-jobs-section .admin-job-card:hover .admin-jobs-contentBx a {
+			opacity: 1;
+			transform: translateY(0px);
+			transition-delay: 0.75s;
+		}
+
+		.available-jobs-section .admin-job-card .edit-delete-container {
+			display: flex;
+			width: 100%;
+			margin-top: 10px;
+		}
+
+		.available-jobs-section .admin-job-card .edit-delete-container .edit-job-button,
+		.available-jobs-section .admin-job-card .edit-delete-container .delete-job-button {
+			width: 50%;
+			/* Equal width for both buttons */
+			box-sizing: border-box;
+			/* Include padding and border in width calculation */
+		}
+
+		.available-jobs-section .admin-job-card .edit-delete-container .edit-job-button a,
+		.available-jobs-section .admin-job-card .edit-delete-container .delete-job-button a {
+			display: block;
+			width: 100%;
+			text-align: center;
+			padding: 5px 0;
+			box-sizing: border-box;
+			margin: 0;
+
+		}
+
+		.available-jobs-section .admin-job-card .edit-job-button a:hover {
+			background-color: #8B8000;
+			color: white;
+			transition: background-color 0.1s ease, color 0.1s ease;
+		}
+
+
+		.available-jobs-section .admin-job-card .delete-job-button a:hover {
+			background-color: #EE204D;
+			color: white;
+			transition: background-color 0.1s ease, color 0.1s ease;
+		}
+
+		.available-jobs-section .admin-job-card .apply-jobs-button a {
+			display: block;
+			/* Make the anchor tag a block-level element */
+			width: 100%;
+			/* Set the width to 100% of the parent container */
+			text-align: center;
+			/* Center the text within the button */
+			padding: 15px 0;
+			/* Add padding for visual appeal */
+			box-sizing: border-box;
+			/* Include padding and border in the element's total width and height */
+
+		}
+
+		.available-jobs-section .admin-job-card .apply-jobs-button a:hover {
+			background-color: var(--primary-color);
+			color: white;
+			transition: background-color 0.1s ease, color 0.1s ease;
+		}
+
+		.admin-job-card .count-container {
+			position: absolute;
+			top: 10px;
+			right: 5px;
+			display: flex;
+			/* Use flexbox for side-by-side layout */
+			gap: 5px;
+			/* Add some space between the counts */
+		}
+
+		.admin-job-card .applied-count {
+			background: var(--accent-color-2);
+			color: var(--primary-color);
+			padding: 5px 50px;
+			border-radius: 20px;
+			margin-top: -15px;
+			font-size: 18px;
+			white-space: nowrap;
+		}
+
+		.admin-job-card .count-container {
+			/* New container for counts */
+			display: flex;
+			/* Apply flexbox */
+			justify-content: flex-start;
+			/* Align items to the start */
+			margin-top: 15px;
+			/* Add some spacing between applied and other counts */
+		}
+
+
+		.admin-job-card .new-count,
+		.admin-job-card .selected-count,
+		.admin-job-card .rejected-count {
+			background: var(--accent-color-2);
+			color: var(--primary-color);
+			padding: 5px 10px;
+			border-radius: 20px;
+			font-size: 18px;
+			white-space: nowrap;
+			margin-right: 1px;
+			/* Add space between count items */
+		}
+
+		.admin-job-card .selected-count {
+			background: #E8F8E8;
+		}
+
+		.admin-job-card .rejected-count {
+			background: #FFEBEB;
+		}
+
+		/* available jobs css - end */
+
+		/* popup css - start */
+		.popup-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 10000;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease;
+		}
+
+		.popup-overlay.active {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.congratulations_card,
+		.error_card {
+			background-color: #eceff1;
+			border-radius: 30px;
+			text-align: center;
+			padding: 20px;
+			max-width: 375px;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.2);
+			position: relative;
+			transform: translateY(-50px);
+			opacity: 0;
+			transition: transform 0.3s ease, opacity 0.3s ease;
+		}
+
+		.popup-overlay.active .congratulations_card,
+		.popup-overlay.active .error_card {
+			transform: translateY(0);
+			opacity: 1;
+		}
+
+		.close {
+			position: absolute;
+			right: 32px;
+			top: 32px;
+			width: 32px;
+			height: 32px;
+			opacity: 0.3;
+			transition: opacity 0.2s ease, transform 0.2s ease;
+			cursor: pointer;
+		}
+
+		.congratulations_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(36000deg);
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+
+		.error_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(-36000deg);
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+
+		.congratulations_card,
+		.error_card {
+			transform: scale(0.8);
+			opacity: 0;
+			transition: transform 0.3s ease, opacity 0.3s ease;
+		}
+
+		.popup-overlay.active .congratulations_card,
+		.popup-overlay.active .error_card {
+			transform: scale(1);
+			opacity: 1;
+		}
+
+		.close:before,
+		.close:after {
+			position: absolute;
+			left: 15px;
+			content: ' ';
+			height: 33px;
+			width: 2px;
+			background-color: #333;
+		}
+
+		.close:before {
+			transform: rotate(45deg);
+		}
+
+		.close:after {
+			transform: rotate(-45deg);
+		}
+
+		.congratulations_card .ilustration,
+		.error_card .ilustration {
+			margin: 30px;
+		}
+
+		.congratulations_card .ilustration .gif-container,
+		.error_card .ilustration .gif-container {
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			overflow: hidden;
+			margin: 0 auto;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.congratulations_card .ilustration .gif-container img,
+		.error_card .ilustration .gif-container img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.congratulations_card h3,
+		.error_card h3 {
+			font-family: "Fredoka", sans-serif;
+			font-size: 2rem;
+			line-height: 2.2rem;
+			color: #1d2428;
+			font-weight: bold;
+			margin: 30px 0;
+		}
+
+		.congratulations_card p,
+		.error_card p {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1rem;
+			line-height: 1.3rem;
+			color: #5e7280;
+			margin: 30px auto;
+			max-width: 80%;
+		}
+
+		.congratulations_card button,
+		.error_card button {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1.1rem;
+			font-weight: bold;
+			padding: 15px 80px;
+			border-radius: 25px;
+			color: white;
+			border: 0;
+			margin: 30px 0;
+			outline: none;
+			background-color: var(--primary-color);
+			box-shadow: 10px 10px 10px var(--accent-color-2), -10px -10px 10px var(--accent-color-2), 0 0 5px rgba(0, 0, 0, 0.1);
+			transition: ease all 0.3s;
+			cursor: pointer;
+		}
+
+		.congratulations_card button:hover,
+		.error_card button:hover {
+			box-shadow: 20px 20px 20px var(--accent-color-2), -20px -20px 20px var(--accent-color-2), 0 0 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-3px);
+		}
+
+		.congratulations_card button:active,
+		.error_card button:active {
+			transform: scale(0.9);
+			box-shadow: inset -1px -1px 3px var(--primary-color), -20px -20px 20px rgba(136, 202, 139, 0);
+		}
+
+		.error_card button {
+			background-color: hsl(348, 83%, 47%);
+		}
+
+		/* popup css - end */
+
+		.user-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.user-list li {
+			background-color: var(--accent-color-2);
+			border: 1px solid var(--accent-color-1);
+			margin-bottom: 10px;
+			padding: 15px;
+			border-radius: 5px;
+		}
+
+		.user-list li h3 {
+			margin-top: 0;
+			color: var(--primary-color);
+		}
+
+		.user-list li p {
+			margin-bottom: 5px;
+			text-align: left;
+		}
+
+		.user-list li strong {
+			font-weight: bold;
+		}
+
+		.feedback-list {
+			list-style: none;
+			padding: 0;
+		}
+
+		.feedback-list li {
+			background-color: var(--accent-color-2);
+			border: 1px solid var(--accent-color-1);
+			margin-bottom: 10px;
+			padding: 15px;
+			border-radius: 5px;
+		}
+
+		.feedback-list li h3 {
+			margin-top: 0;
+			color: var(--primary-color);
+		}
+
+		.feedback-list li p {
+			margin-bottom: 5px;
+			text-align: left;
+		}
+
+		.feedback-list li strong {
+			font-weight: bold;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<div class="button-row">
+			<a href="{% url 'AdminDashboard' %}" class="gradient-button">Admin Dashboard</a>
+			<a href="{% url 'PostJobs' %}" class="gradient-button">Post Jobs</a>
+			<a href="{% url 'AllViewScore' %}" class="gradient-button">View All Resume's </a>
+			<a href="{% url 'ViewFeedback' %}" class="gradient-button">View Feedback</a>
+			<a href="{% url 'home' %}" class="gradient-button"
+				style="color: whitesmoke; background-color: #5146BF;">Logout</a>
+		</div>
+		<div class="container mt-4">
+			<div class="row justify-content-center">
+				<div class="content">
+					<div class="form-container">
+						<center>
+							{% if Admin_name %}
+							<h2><b>Admin Dashboard</b></h2>
+
+							<div id="congrats-gif-container" style="text-align: center; margin-bottom: 20px;">
+								<div class="ilustration">
+									<div class="gif-container">
+										<img src="{% static 'gifs/admin.gif' %}" background-color="transparent"
+											alt="Hello GIF">
+									</div>
+								</div>
+							</div>
+							<div class="welcome-container">
+								<h1 class="welcome-text">Welcome, <span id="user-name"></span>!</h1>
+							</div>
+
+
+							{% if Admin_jobs_List %}
+							<center>
+								<h3 style="margin-top: 40px;"><b>All Posted Jobs </b></h3>
+								<div class="row">
+									<div class="col-md-12 col-lg-12">
+										<div class="available-jobs-section row"> {% for job in Admin_jobs_List %}
+											<div class="col-md-4 col-sm-6 mb-4">
+												<div class="admin-job-card">
+													<div class="count-container">
+														<div class="applied-count" title="Total number of applications">
+															{{ job.NumberOfApplied }}</div>
+														<div class="count-container">
+															<div class="new-count">{{ job.NumberOfNew }}</div>
+															<div class="selected-count">{{ job.NumberOfSelected }}</div>
+															<div class="rejected-count">{{ job.NumberOfRejected }}</div>
+														</div>
+													</div>
+													<div class="admin-job-logo">
+														<img src="{% static 'images/jobcardlogo/company_logo.png' %}"
+															alt="Company Logo">
+													</div>
+													<div class="apply-jobs-imgBx">
+														<img src="" alt="{{ job.job_logo_name }} Logo">
+													</div>
+													<div class="admin-jobs-contentBx">
+														<h2>{{ job.title }}</h2>
+														<div class="admin-jobs-details">
+															<h3>Company:</h3>
+															<span>{{ job.company }}</span>
+														</div>
+														<div class="admin-jobs-details">
+															<h3>Salary:</h3>
+															<span>{{ job.salary|safe }}</span>
+														</div>
+														<div class="admin-jobs-details">
+															<h3>Skills:</h3>
+															<span>{{ job.skills_required|safe }}</span>
+														</div>
+
+														<div class="edit-delete-container">
+															<div class="edit-job-button">
+																<a href="{% url 'EditJobs' job_id=job.job_id %}">EDIT
+																	JOB</a>
+															</div>
+															<div class="delete-job-button">
+																<a href="#"
+																	onclick="showDeleteConfirmation('{{ job.job_id }}', '{{ job.title }}'); return false;">DELETE
+																	JOB</a>
+															</div>
+														</div>
+														<div class="apply-jobs-button">
+															<a
+																href="ViewScore?jobid={{ job.job_id }}&jobTitle={{ job.title }}&selected=None">View
+																Applicants</a>
+														</div>
+													</div>
+												</div>
+											</div>
+											{% endfor %}
+										</div>
+									</div>
+								</div>
+							</center>
+							{% endif %}
+						</center>
+						{% endif %}
+
+
+						<p class="text-danger">{{ data|safe }}</p>
+
+
+						{% if jobs %}
+						<h2>Posted Jobs:</h2>
+						<ul class="job-list">
+							{% for job in jobs %}
+							<li>
+								<h3>{{ job.title }}</h3>
+								<p><strong>Company:</strong> {{ job.company }}</p>
+								<p><strong>Description:</strong> {{ job.description|safe }}</p>
+								<p><strong>Skills Required:</strong> {{ job.skills_required|safe }}</p>
+							</li>
+							{% endfor %}
+						</ul>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="popup-overlay" id="deleteConfirmationPopup">
+		<div class="error_card">
+			<a href="#" class="close" id="closeDeleteConfirmationPopup"></a>
+			<div class="ilustration">
+				<div class="gif-container">
+					<img src="{% static 'gifs/error.gif' %}" background-color="transparent" alt="Delete GIF">
+				</div>
+			</div>
+			<h3 id="deleteConfirmationMessage"></h3>
+			<button id="confirmDeleteButton">Confirm Delete</button>
+		</div>
+	</div>
+	<div class="popup-overlay" id="successPopup">
+		<div class="congratulations_card">
+			<a href="#" class="close" id="closeSuccessPopup"></a>
+			<div class="ilustration">
+				<div class="gif-container">
+					<img src="{% static 'gifs/success.gif' %}" alt="Success GIF" background-color="transparent"
+						style="transform: scale(1.3);">
+				</div>
+			</div>
+			<h3>Job Deleted Successfully!</h3>
+			<p>{{ delete_job_status_message }}</p>
+			<button id="successOkButton">OK</button>
+		</div>
+	</div>
+
+	<div class="popup-overlay" id="errorPopup">
+		<div class="error_card">
+			<a href="#" class="close" id="closeErrorPopup"></a>
+			<div class="ilustration">
+				<div class="gif-container" style="">
+					<img src="{% static 'gifs/error.gif' %}" alt="Error GIF">
+				</div>
+			</div>
+			<h3>Job Deletion Failed!</h3>
+			<p>{{ delete_job_status_message }}</p>
+			<button id="errorOkButton">OK</button>
+		</div>
+	</div>
+
+	<div class="popup-overlay" id="editStatusSuccessPopup">
+		<div class="congratulations_card">
+			<a href="#" class="close" id="closeEditStatusSuccessPopup"></a>
+			<div class="ilustration">
+				<div class="gif-container">
+					<img src="{% static 'gifs/success.gif' %}" alt="Edit Status Success GIF"
+						background-color="transparent" style="transform: scale(1.3);">
+				</div>
+			</div>
+			<h3>Job Status Updated Successfully!</h3>
+			<p id="editStatusSuccessMessage">{{ EditJobs_status_message }}</p>
+			<button id="editStatusSuccessOkButton">OK</button>
+		</div>
+	</div>
+
+	<div class="popup-overlay" id="editStatusErrorPopup">
+		<div class="error_card">
+			<a href="#" class="close" id="closeEditStatusErrorPopup"></a>
+			<div class="ilustration">
+				<div class="gif-container">
+					<img src="{% static 'gifs/error.gif' %}" alt="Edit Status Error GIF">
+				</div>
+			</div>
+			<h3>Job Status Update Failed!</h3>
+			<p id="editStatusErrorMessage">{{ EditJobs_status_message }}</p>
+			<button id="editStatusErrorOkButton">OK</button>
+		</div>
+	</div>
+
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		// JavaScript for Typing Animation for user name
+		const userName = "Administrator";
+		console.log(userName);
+		const nameSpan = document.getElementById("user-name");
+		const STATIC_URL = "{% static '' %}";
+
+		if (userName) {
+			function typeWriter(text, i = 0) {
+				if (i < text.length) {
+					nameSpan.textContent = text.substring(0, i + 1);
+					setTimeout(() => typeWriter(text, i + 1), 200);
+				} else {
+					setTimeout(() => {
+						backspace(text);
+					}, 3000);
+				}
+			}
+
+			function backspace(text, i = text.length) {
+				if (i > 0) {
+					nameSpan.textContent = text.substring(0, i - 1);
+					setTimeout(() => backspace(text, i - 1), 100);
+				} else {
+					setTimeout(() => typeWriter(text), 200);
+				}
+			}
+
+			typeWriter(userName);
+		}
+
+		function getImagePath(jobLogoName) {
+			if (!jobLogoName) {
+				return STATIC_URL + "images/jobcardlogo/default.png";
+			}
+
+			const sanitizedFilename = jobLogoName
+				.toLowerCase()
+				.replace(/ /g, "-")
+				.replace(/[^a-z0-9-]/g, "");
+
+			return STATIC_URL + "images/jobcardlogo/" + jobLogoName;
+		}
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const jobCards = document.querySelectorAll('.admin-job-card');
+
+			jobCards.forEach(card => {
+				const logoNameElement = card.querySelector('.apply-jobs-imgBx img');
+				if (logoNameElement) {
+					const logoName = logoNameElement.alt.replace(' Logo', '');
+					const imagePath = getImagePath(logoName);
+					logoNameElement.src = imagePath;
+
+					// Debugging: Check the logoName and imagePath
+					console.log("Logo Name:", logoName);
+					console.log("Image Path:", imagePath);
+				}
+			});
+		});
+
+		document.addEventListener('DOMContentLoaded', function () {
+			const userNameElement = document.getElementById('user-name');
+			if (userNameElement) {
+				const adminName = "{{ Admin_name }}";
+				userNameElement.textContent = adminName;
+			}
+
+			// Check for delete_job_status and display appropriate popup
+			const deleteStatus = "{{ delete_job_status|yesno:'True,False' }}";
+			const deleteMessage = "{{ delete_job_status_message|escapejs }}";
+
+			if (deleteStatus === "True" && deleteMessage) {
+				document.getElementById('successPopup').classList.add('active');
+			} else if (deleteStatus === "False" && deleteMessage) {
+				document.getElementById('errorPopup').classList.add('active');
+			}
+
+			// Event listeners to close success and error popups and redirect
+			document.getElementById('closeSuccessPopup').addEventListener('click', function (e) {
+				e.preventDefault();
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('successOkButton').addEventListener('click', function () {
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('closeErrorPopup').addEventListener('click', function (e) {
+				e.preventDefault();
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('errorOkButton').addEventListener('click', function () {
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+
+			// Check for edit_job_status and display appropriate popup
+			const editStatus = "{{ EditJobs_status|yesno:'True,False' }}";
+			const editMessage = "{{ EditJobs_status_message|escapejs }}";
+
+			if (editStatus === "True" && editMessage) {
+				document.getElementById('editStatusSuccessPopup').classList.add('active');
+			} else if (editStatus === "False" && editMessage) {
+				document.getElementById('editStatusErrorPopup').classList.add('active');
+			}
+
+			// Event listeners to close edit status success and error popups and redirect
+			document.getElementById('closeEditStatusSuccessPopup').addEventListener('click', function (e) {
+				e.preventDefault();
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('editStatusSuccessOkButton').addEventListener('click', function () {
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('closeEditStatusErrorPopup').addEventListener('click', function (e) {
+				e.preventDefault();
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+
+			document.getElementById('editStatusErrorOkButton').addEventListener('click', function () {
+				window.location.href = "{% url 'AdminDashboard' %}";
+			});
+		});
+
+		function showDeleteConfirmation(jobId, jobTitle) {
+			const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+			const deleteConfirmationMessage = document.getElementById('deleteConfirmationMessage');
+			const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+			deleteConfirmationMessage.textContent = "Are you sure you want to delete the job '" + jobTitle + "'?";
+			deleteConfirmationPopup.classList.add('active');
+
+			confirmDeleteButton.onclick = function () {
+				window.location.href = `DeleteJobAction?jobid=${jobId}&jobTitle=${jobTitle}`;
+
+			};
+
+			document.getElementById('closeDeleteConfirmationPopup').onclick = function (e) {
+				e.preventDefault();
+				deleteConfirmationPopup.classList.remove('active');
+			};
+
+			deleteConfirmationPopup.onclick = function (event) {
+				if (event.target === deleteConfirmationPopup) {
+					deleteConfirmationPopup.classList.remove('active');
+				}
+			};
+		}
+	</script>
+</body>
+
+</html>

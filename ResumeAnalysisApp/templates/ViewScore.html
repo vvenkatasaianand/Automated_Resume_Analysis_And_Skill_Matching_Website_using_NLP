@@ -1,0 +1,873 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Resume Analysis And Skill Matching With NLP - Admin Screen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <style>
+        :root {
+            --bg-color: hsl(230, 58%, 93%);
+            --primary-color: hsl(230, 58%, 30%);
+            --secondary-color: hsl(232, 47%, 50%);
+            --accent-color-1: hsl(230, 58%, 75%);
+            --accent-color-2: hsl(210, 66.7%, 98.8%);
+            --background: #hsl(230, 58%, 93%);
+            --color: #ffffff;
+            --selected-color: ##E8F8E8;
+            --rejected-color: ##F8E8E8;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            height: 100%;
+            display: grid;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            max-width: 60em;
+            color: var(--primary-color);
+            background-color: var(--background);
+            font-family: sans-serif;
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-container {
+            background-color: var(--accent-color-2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .image-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: var(--bg-color);
+            text-align: center;
+        }
+
+        .image-container img {
+            height: auto;
+            max-width: 30em;
+            margin-bottom: 2em;
+        }
+
+        #header {
+            background-color: var(--background);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        #header h1 {
+            color: white;
+        }
+
+        [type="checkbox"]:checked,
+        [type="checkbox"]:not(:checked) {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .menu-icon:checked+label,
+        .menu-icon:not(:checked)+label {
+            position: fixed;
+            top: 63px;
+            right: 75px;
+            display: block;
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        /* ... (rest of the menu icon styles from UserScreen.html) ... */
+        .gradient-button-new,
+        .gradient-button-selected,
+        .gradient-button-rejected,
+        .gradient-button {
+            position: relative;
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 25px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin: 5px;
+            text-decoration: none;
+        }
+
+        .gradient-button-new::before,
+        .gradient-button-selected::before,
+        .gradient-button-rejected::before,
+        .gradient-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 3px;
+            background: linear-gradient(90deg, #5146BF, #F5FEFD, #5146BF);
+            background-size: 300% 100%;
+            -webkit-mask:
+                linear-gradient(white 0 0) content-box,
+                linear-gradient(white 0 0);
+            mask:
+                linear-gradient(white 0 0) content-box,
+                linear-gradient(white 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: moveBorder 2s linear infinite alternate;
+        }
+
+        .gradient-button-new::before {
+            background: linear-gradient(90deg, #439ff5, #F5FEFD, #5146BF);
+            background-size: 300% 100%;
+            animation: moveBorder 2s linear infinite alternate;
+        }
+
+        .gradient-button-selected::before {
+            background: linear-gradient(90deg, #08e795, #F5FEFD, #5146BF);
+            background-size: 300% 100%;
+            animation: moveBorder 2s linear infinite alternate;
+        }
+
+        .gradient-button-rejected::before {
+            background: linear-gradient(90deg, #dc3806, #F5FEFD, #5146BF);
+            background-size: 300% 100%;
+            animation: moveBorder 2s linear infinite alternate;
+        }
+
+        @keyframes moveBorder {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .gradient-button-new:hover,
+        .gradient-button-selected:hover,
+        .gradient-button-rejected:hover,
+        .gradient-button:hover {
+            transform: scale(1.02);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            transition: none;
+            gap: 30px;
+        }
+
+        /* CSS for GIF - start */
+        #congrats-gif-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #congrats-gif-container .gif-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #congrats-gif-container .gif-container img {
+            width: 100%;
+            height: 100%;
+            transform: scale(1);
+            object-fit: cover;
+        }
+
+        #gif-placeholder {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* CSS for GIF - end */
+
+        /*  jobs list css - start */
+
+        .job-list-container {
+            background-color: var(--background);
+            color: var(--primary-color);
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .job-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .job-list li {
+            background-color: var(--accent-color-2);
+            border: 2px dashed var(--border-color);
+            /* Dashed, for that extra edge of unease */
+            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 0;
+            /* Sharp, no comfort here */
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1);
+            /* Subtle, but noticeable shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .job-list li:hover {
+            transform: scale(1.02);
+            /* A slight, unsettling movement */
+            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .job-list li h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+            font-size: 1.5em;
+            text-transform: uppercase;
+            /* For maximum impact */
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--border-color);
+            /* Added border to divide the pain */
+            padding-bottom: 10px;
+        }
+
+        .job-list li p {
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 1em;
+        }
+
+        .job-list li strong {
+            font-weight: 900;
+            /* Extra bold, to emphasize the dread */
+            color: var(--secondary-color);
+            /* That sickly yellow again */
+        }
+
+        /* jobs list css - end */
+
+        /* courses-container css - start */
+        .courses-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .course {
+            background-color: var(--color);
+            border-radius: 10px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            width: 100%;
+            margin: 20px;
+            overflow: hidden;
+            flex-direction: row;
+        }
+
+        .course h6 {
+            opacity: 0.6;
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--primary-color);
+        }
+
+        .course h2 {
+            letter-spacing: 1px;
+            margin: 10px 0;
+            color: var(--primary-color);
+        }
+
+        .course-preview {
+            background-color: var(--primary-color);
+            color: var(--color);
+            padding: 30px;
+            max-width: 320px;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .course-preview a {
+            color: var(--color);
+            display: inline-block;
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 30px;
+            text-decoration: none;
+        }
+
+        .course-info {
+            padding: 30px;
+            position: relative;
+            width: 100%;
+        }
+
+        .progress-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            text-align: right;
+            width: auto;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .progress-container1 {
+            padding-bottom: 35px;
+        }
+
+
+        .Selectedbtn,
+        .Rejectedbtn,
+        .ViewResumebtn {
+            background-color: var(--primary-color);
+            border: 0;
+            border-radius: 50px;
+            box-shadow: 0 10px 10px rgba(0, 0, 0, 0.2);
+            color: var(--color);
+            font-size: 16px;
+            padding: 12px 25px;
+            position: absolute;
+            letter-spacing: 1px;
+            transition: transform 0.1s ease;
+            overflow: hidden;
+        }
+
+        .ViewResumebtn {
+            background-color: var(--accent-color-2);
+            color: var(--primary-color);
+            bottom: 20px;
+            transform: translateX(10%);
+        }
+
+        .Selectedbtn {
+            height: 45px;
+            width: 150px;
+            background-color: #E8F8E8;
+            color: var(--primary-color);
+            bottom: 20px;
+            right: 30px;
+        }
+
+        .Rejectedbtn {
+            height: 45px;
+            width: 150px;
+            background-color: hsla(358, 98%, 66%, 0.651);
+            color: var(--primary-color);
+            bottom: 17px;
+            right: 200px;
+        }
+
+        .Selectedbtn:active,
+        .Rejectedbtn:active,
+        .ViewResumebtn:active {
+            transform: scale(0.7);
+        }
+
+        .Selectedbtn::before,
+        .Rejectedbtn::before,
+        .ViewResumebtn::before {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            transition: transform 0.3s ease;
+            top: 50%;
+            /* Center the circle vertically */
+            left: 50%;
+            /* Center the circle horizontally */
+        }
+
+        .ViewResumebtn::before {
+
+            background: hsla(230, 58%, 30%, 0.299);
+
+
+        }
+
+        .Selectedbtn:hover::before,
+        .Rejectedbtn:hover::before,
+        .ViewResumebtn:hover::before {
+            transform: translate(-50%, -50%) scale(2.5);
+        }
+
+        /* courses-container css - end */
+
+
+        /* popup css - start */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .congratulations_card,
+        .error_card {
+            background-color: #eceff1;
+            border-radius: 30px;
+            text-align: center;
+            padding: 20px;
+            max-width: 375px;
+            box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            transform: translateY(-50px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .popup-overlay.active .congratulations_card,
+        .popup-overlay.active .error_card {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .close {
+            position: absolute;
+            right: 32px;
+            top: 32px;
+            width: 32px;
+            height: 32px;
+            opacity: 0.3;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .congratulations_card .close:hover {
+            opacity: 1;
+            transform: scale(1.3) rotate(36000deg);
+            transition: opacity 0.2s ease, transform 300s linear;
+        }
+
+        .error_card .close:hover {
+            opacity: 1;
+            transform: scale(1.3) rotate(-36000deg);
+            transition: opacity 0.2s ease, transform 300s linear;
+        }
+
+        .congratulations_card,
+        .error_card {
+            transform: scale(0.8);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .popup-overlay.active .congratulations_card,
+        .popup-overlay.active .error_card {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .close:before,
+        .close:after {
+            position: absolute;
+            left: 15px;
+            content: ' ';
+            height: 33px;
+            width: 2px;
+            background-color: #333;
+        }
+
+        .close:before {
+            transform: rotate(45deg);
+        }
+
+        .close:after {
+            transform: rotate(-45deg);
+        }
+
+        .congratulations_card .ilustration,
+        .error_card .ilustration {
+            margin: 30px;
+        }
+
+        .congratulations_card .ilustration .gif-container,
+        .error_card .ilustration .gif-container {
+            width: 200px;
+            height: 200px;
+            border-radius: 100%;
+            overflow: hidden;
+            margin: 0 auto;
+            box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .congratulations_card .ilustration .gif-container img,
+        .error_card .ilustration .gif-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .congratulations_card h3,
+        .error_card h3 {
+            font-family: "Fredoka", sans-serif;
+            font-size: 2rem;
+            line-height: 2.2rem;
+            color: #1d2428;
+            font-weight: bold;
+            margin: 30px 0;
+        }
+
+        .congratulations_card p,
+        .error_card p {
+            font-family: "Fredoka", sans-serif;
+            font-size: 1rem;
+            line-height: 1.3rem;
+            color: #5e7280;
+            margin: 30px auto;
+            max-width: 80%;
+        }
+
+        .congratulations_card button,
+        .error_card button {
+            font-family: "Fredoka", sans-serif;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 15px 80px;
+            border-radius: 25px;
+            color: white;
+            border: 0;
+            margin: 30px 0;
+            outline: none;
+            background-color: var(--primary-color);
+            box-shadow: 10px 10px 10px var(--accent-color-2), -10px -10px 10px var(--accent-color-2), 0 0 5px rgba(0, 0, 0, 0.1);
+            transition: ease all 0.3s;
+            cursor: pointer;
+        }
+
+        .congratulations_card button:hover,
+        .error_card button:hover {
+            box-shadow: 20px 20px 20px var(--accent-color-2), -20px -20px 20px var(--accent-color-2), 0 0 8px rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .congratulations_card button:active,
+        .error_card button:active {
+            transform: scale(0.9);
+            box-shadow: inset -1px -1px 3px var(--primary-color), -20px -20px 20px rgba(136, 202, 139, 0);
+        }
+
+        .error_card button {
+            background-color: hsl(348, 83%, 47%);
+        }
+
+        /* popup css - end */
+    </style>
+</head>
+
+<body>
+    <div id="wrapper">
+        <div id="header">
+            <div id="logo">
+                <h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+                    Automated Resume Analysis And Skill Matching With NLP</h1>
+            </div>
+        </div>
+        <div class="button-row">
+            <a href="{% url 'AdminDashboard' %}" class="gradient-button">Admin Dashboard</a>
+            <a href="{% url 'PostJobs' %}" class="gradient-button">Post Jobs</a>
+            <a href="{% url 'AllViewScore' %}" class="gradient-button">View All Resume's </a>
+            <a href="{% url 'ViewFeedback' %}" class="gradient-button">View Feedback</a>
+            <a href="{% url 'home' %}" class="gradient-button"
+                style="color: whitesmoke; background-color: #5146BF;">Logout</a>
+        </div>
+        <div class="container mt-4">
+            <div class="row justify-content-center">
+                <div class="content">
+                    {% if type %}
+                    <div class="button-row">
+                        <a href="{% url 'AllViewScore' %}" class="gradient-button-new">ALL Resumes</a>
+                        <a href="AllViewScore?selected=None" class="gradient-button-new">New Resumes</a>
+                        <a href="AllViewScore?selected=1" class="gradient-button-selected">Selected Resumes</a>
+                        <a href="AllViewScore?selected=0" class="gradient-button-rejected">Rejected Resumes</a>
+                    </div>
+                    {% else %}
+                    <div class="button-row">
+                        <a href="ViewScore?jobid={{ job_id }}&jobTitle={{ job_title }}&selected=None"
+                            class="gradient-button-new">New Resumes</a>
+                        <a href="ViewScore?jobid={{ job_id }}&jobTitle={{ job_title }}&selected=1"
+                            class="gradient-button-selected">Selected Resumes</a>
+                        <a href="ViewScore?jobid={{ job_id }}&jobTitle={{ job_title }}&selected=0"
+                            class="gradient-button-rejected">Rejected Resumes</a>
+                    </div>
+                    {% endif %}
+
+                    <center>
+                        <h5 style="color: #dc3806; font-weight: bold;margin-top: 20px;">{{ message }}</h5>
+                    </center>
+
+                    {% if success_message %}
+                    <center>
+                        <h5 style="color: #08e795; font-weight: bold;margin-top: 20px;">{{ success_message }}</h5>
+                    </center>
+                    {% for app in applicants %}
+                    <div class="courses-container">
+                        <div class="course">
+                            <div class="course-preview">
+                                <h6 style="color: #F5FEFD; margin-bottom: 10px;">Resume</h6>
+                                <div id="congrats-gif-container" style="text-align: center; margin-bottom: 20px;">
+                                    <div class="ilustration">
+                                        {% if app.selected_number == 1 %}
+                                        <h2 style="color: #08e795; margin-bottom: 10px;">{{ app.selected}}</h2>
+                                        {% elif app.selected_number == 0 %}
+                                        <h2 style="color: #dc3806; margin-bottom: 10px;">{{ app.selected}}</h2>
+                                        {% else %}
+                                        <h2 style="color: #F5FEFD; margin-bottom: 10px;">{{ app.selected}}</h2>
+                                        {% endif %}
+                                        <div class="gif-container">
+                                            {% if app.selected_number == 1 %}
+                                            <img src="{% static 'gifs/seleceteduser.gif' %}"
+                                                background-color="transparent" alt="seleceteduser GIF">
+                                            {% elif app.selected_number == 0 %}
+                                            <img src="{% static 'gifs/rejecteduser.gif' %}"
+                                                background-color="transparent" alt="rejecteduser GIF">
+                                            {% else %}
+                                            <img src="{% static 'gifs/user.gif' %}" background-color="transparent"
+                                                alt="user GIF">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                <h2 style="color: aliceblue;">{{app.resume_json.name}}</h2>
+                                <p><strong>Username:</strong> {{app.username}}</p>
+                                <p><strong>Email:</strong><br> {{app.email_id}}, {{app.resume_json.email}}</p>
+                                <p><strong>Mobile:</strong> {{app.resume_json.mobile_number}}, {{app.contact_no}}</p>
+                                <button class="ViewResumebtn" onclick="viewResume()">View Resume</button>
+                            </div>
+                            <div class="course-info">
+                                <div class="progress-container">
+                                    <span class="progress-text">
+                                        {{app.resume_score}}%
+                                    </span>
+                                </div>
+                                <div class='progress-container1'>
+                                    <h6 style="margin-bottom: 20px;">Details</h6>
+                                    <p><strong>Job Title:</strong> {{app.job_name}}</p>
+                                    <p><strong>Resume Name:</strong> {{app.resume_name}}</p>
+                                    <p><strong>Upload Date:</strong> {{app.upload_date}}</p>
+                                    <p><strong>Application Status:</strong> {{app.selected}}</p>
+                                    <p><strong>Skills:</strong> {% for skill in app.resume_json.skills %} {{ skill }},
+                                        {% endfor %}</p>
+                                    <p><strong>College:</strong> {{app.resume_json.college_name}}</p>
+                                    <p><strong>Degree:</strong> {{app.resume_json.degree}}</p>
+                                    <p><strong>Designation:</strong> {{app.resume_json.designation}}</p>
+                                    <p><strong>Experience:</strong> {{app.resume_json.experience}} years</p>
+                                    <p><strong>Companies:</strong> {{app.resume_json.company_names}}</p>
+                                    <p><strong>Pages:</strong> {{app.resume_json.no_of_pages}}</p>
+                                    <p><strong>Total Experience:</strong> {{app.resume_json.total_experience}}</p>
+                                    {% if app.selected_number == 1 %}
+                                    <button class="Selectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Selected')"
+                                        style="cursor: not-allowed; background-color: gray; color: white; pointer-events: none; bottom: 17px;"
+                                        disabled><b>Selected</b></button>
+                                    <button class="Rejectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Rejected')"><b>Rejected</b></button>
+                                    {% elif app.selected_number == 0 %}
+                                    <button class="Selectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Selected')"><b>Selected</b></button>
+                                    <button class="Rejectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Rejected')"
+                                        style="cursor: not-allowed; background-color: gray; color: white; pointer-events: none; bottom: 17px;"
+                                        disabled><b>Rejected</b></button>
+                                    {% else %}
+                                    <button class="Selectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Selected')"><b>Selected</b></button>
+                                    <button class="Rejectedbtn"
+                                        onclick="showConfirmation('{{ app.username }}', '{{ app.job_id }}', 'Rejected')"><b>Rejected</b></button>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="actionConfirmationPopup">
+        <div class="error_card">
+            <a href="#" class="close" id="closeActionConfirmationPopup"></a>
+            <div class="ilustration">
+                <div class="gif-container">
+                    <img src="{% static 'gifs/error.gif' %}" alt="Confirmation GIF">
+                </div>
+            </div>
+            <h3 id="actionConfirmationMessage"></h3>
+            <button id="confirmActionButton">Confirm</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="successPopup">
+        <div class="congratulations_card">
+            <a href="#" class="close" id="closeSuccessPopup"></a>
+            <div class="ilustration">
+                <div class="gif-container">
+                    <img src="{% static 'gifs/success.gif' %}" alt="Success GIF" background-color="transparent"
+                        style="transform: scale(1.3);">
+                </div>
+            </div>
+            <h3>Job Marked as {{action}} Successfully!</h3>
+            <p>{{ message }}</p>
+            <button id="successOkButton">OK</button>
+        </div>
+    </div>
+
+    <div class="popup-overlay" id="errorPopup">
+        <div class="error_card">
+            <a href="#" class="close" id="closeErrorPopup"></a>
+            <div class="ilustration">
+                <div class="gif-container" style="">
+                    <img src="{% static 'gifs/error.gif' %}" alt="Error GIF">
+                </div>
+            </div>
+            <h3>Job Mark as {{action}} Failed!</h3>
+            <p>{{ message }}</p>
+            <button id="errorOkButton">OK</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // JavaScript for Typing Animation for user name
+
+        function showConfirmation(username, jobId, action) {
+            const confirmationPopup = document.getElementById('actionConfirmationPopup');
+            const confirmationMessage = document.getElementById('actionConfirmationMessage');
+            const confirmButton = document.getElementById('confirmActionButton');
+
+            confirmationMessage.textContent = "Are you sure you want to mark this applicant as " + action + "?";
+            confirmationPopup.classList.add('active');
+
+            confirmButton.onclick = function () {
+                let url;
+                if (action === 'Selected') {
+                    url = "{% url 'MakeSelected' %}?username=" + encodeURIComponent(username) + "&job_id=" + encodeURIComponent(jobId);
+                } else if (action === 'Rejected') {
+                    url = "{% url 'MakeRejected' %}?username=" + encodeURIComponent(username) + "&job_id=" + encodeURIComponent(jobId);
+                }
+
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        confirmationPopup.classList.remove('active'); // Close confirmation popup
+                        if (data.makeSelected_statues === true || data.MakeRejected_statues === true) {
+                            document.getElementById('successPopup').classList.add('active');
+                            document.querySelector('#successPopup p').textContent = data.message;
+                        } else {
+                            document.getElementById('errorPopup').classList.add('active');
+                            document.querySelector('#errorPopup p').textContent = data.message;
+                        }
+                    })
+                    .catch(error => {
+                        confirmationPopup.classList.remove('active'); // Close confirmation popup
+                        document.getElementById('errorPopup').classList.add('active');
+                        document.querySelector('#errorPopup p').textContent = "An error occurred during the request.";
+                        console.error('Error:', error);
+                    });
+            };
+
+            document.getElementById('closeActionConfirmationPopup').onclick = function (e) {
+                e.preventDefault();
+                confirmationPopup.classList.remove('active');
+            };
+
+            confirmationPopup.onclick = function (event) {
+                if (event.target === confirmationPopup) {
+                    confirmationPopup.classList.remove('active');
+                }
+            };
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // ... (rest of your existing JavaScript code) ...
+
+            // Event listeners to close success and error popups and reload
+            document.getElementById('successOkButton').addEventListener('click', function () {
+                location.reload();
+            });
+
+            document.getElementById('errorOkButton').addEventListener('click', function () {
+                location.reload();
+            });
+        });
+
+        function showDeleteConfirmation(jobId, jobTitle) {
+            const deleteConfirmationPopup = document.getElementById('deleteConfirmationPopup');
+            const deleteConfirmationMessage = document.getElementById('deleteConfirmationMessage');
+            const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+
+            deleteConfirmationMessage.textContent = "Are you sure you want to delete the job '" + jobTitle + "'?";
+            deleteConfirmationPopup.classList.add('active');
+
+            confirmDeleteButton.onclick = function () {
+                window.location.href = `DeleteJobAction?jobid=${jobId}&jobTitle=${jobTitle}`;
+
+            };
+
+            document.getElementById('closeDeleteConfirmationPopup').onclick = function (e) {
+                e.preventDefault();
+                deleteConfirmationPopup.classList.remove('active');
+            };
+
+            deleteConfirmationPopup.onclick = function (event) {
+                if (event.target === deleteConfirmationPopup) {
+                    deleteConfirmationPopup.classList.remove('active');
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>

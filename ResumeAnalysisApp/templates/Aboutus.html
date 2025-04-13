@@ -1,0 +1,527 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>About Us - Automated Resume Analysis</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: #FAFCFE;
+			font-family: sans-serif;
+		}
+
+		#wrapper {
+			position: relative;
+			/* Needed for absolute positioning of logo */
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		[type="checkbox"]:checked,
+		[type="checkbox"]:not(:checked) {
+			position: absolute;
+			left: -9999px;
+		}
+
+		.menu-icon:checked+label,
+		.menu-icon:not(:checked)+label {
+			position: fixed;
+			top: 63px;
+			right: 75px;
+			display: block;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			z-index: 10;
+		}
+
+		.menu-icon:checked+label:before,
+		.menu-icon:not(:checked)+label:before {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 30px;
+			height: 20px;
+			z-index: 20;
+			top: 0;
+			left: 0;
+			border-top: 2px solid #353746;
+			border-bottom: 2px solid #353746;
+			transition: border-width 100ms 1500ms ease,
+				top 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after,
+		.menu-icon:not(:checked)+label:after {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 22px;
+			height: 2px;
+			z-index: 20;
+			top: 10px;
+			right: 4px;
+			background-color: #353746;
+			margin-top: -1px;
+			transition: width 100ms 1750ms ease,
+				right 100ms 1750ms ease,
+				margin-top 100ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:before {
+			top: 10px;
+			transform: rotate(45deg);
+			height: 2px;
+			background-color: #353746;
+			border-width: 0;
+			transition: border-width 100ms 340ms ease,
+				top 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after {
+			width: 30px;
+			margin-top: 0;
+			right: 0;
+			transform: rotate(-45deg);
+			transition: width 100ms ease,
+				right 100ms ease,
+				margin-top 100ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav {
+			position: fixed;
+			top: 33px;
+			right: 50px;
+			display: block;
+			width: 80px;
+			height: 80px;
+			padding: 0;
+			margin: 0;
+			z-index: 9;
+			overflow: hidden;
+			box-shadow: 0 8px 30px 0 #353746;
+			background-color: #FEFEFA;
+			animation: border-transform 7s linear infinite;
+			transition: top 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 1100ms ease,
+				width 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		@keyframes border-transform {
+
+			0%,
+			100% {
+				border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+			}
+
+			14% {
+				border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%;
+			}
+
+			28% {
+				border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%;
+			}
+
+			42% {
+				border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%;
+			}
+
+			56% {
+				border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%;
+			}
+
+			70% {
+				border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%;
+			}
+
+			84% {
+				border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%;
+			}
+		}
+
+		.menu-icon:checked~.nav {
+			animation-play-state: paused;
+			top: 50%;
+			right: 50%;
+			transform: translate(50%, -50%);
+			width: 200%;
+			height: 200%;
+			transition: top 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 700ms ease,
+				width 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav ul {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 0;
+			z-index: 6;
+			text-align: center;
+			transform: translateY(-50%);
+			list-style: none;
+		}
+
+		.nav ul li {
+			position: relative;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 10px 0;
+			text-align: center;
+			list-style: none;
+			pointer-events: none;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(30px);
+			transition: all 250ms linear;
+		}
+
+		.nav ul li:nth-child(1) {
+			transition-delay: 200ms;
+		}
+
+		.nav ul li:nth-child(2) {
+			transition-delay: 150ms;
+		}
+
+		.nav ul li:nth-child(3) {
+			transition-delay: 100ms;
+		}
+
+		.nav ul li:nth-child(4) {
+			transition-delay: 50ms;
+		}
+
+		.nav ul li a {
+			font-family: 'Montserrat', sans-serif;
+			font-size: 9vh;
+			text-transform: uppercase;
+			line-height: 1.2;
+			font-weight: 800;
+			display: inline-block;
+			position: relative;
+			color: #353746;
+			transition: all 250ms linear;
+			text-decoration: none;
+		}
+
+		.nav ul li a:hover {
+			text-decoration: none;
+			color: #353746;
+		}
+
+		.nav ul li a:after {
+			display: block;
+			position: absolute;
+			top: 50%;
+			content: '';
+			height: 2vh;
+			margin-top: -1vh;
+			width: 0;
+			left: 0;
+			background-color: #F5FEFD;
+			opacity: 0.8;
+			transition: width 250ms linear;
+		}
+
+		.nav ul li a:hover:after {
+			width: 100%;
+		}
+
+
+		.menu-icon:checked~.nav ul li {
+			pointer-events: auto;
+			visibility: visible;
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 350ms ease,
+				transform 250ms ease;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(1) {
+			transition-delay: 1400ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(2) {
+			transition-delay: 1480ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(3) {
+			transition-delay: 1560ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(4) {
+			transition-delay: 1640ms;
+		}
+
+		.logo {
+			position: absolute;
+			top: 60px;
+			left: 50px;
+			display: block;
+			z-index: 11;
+			transition: all 250ms linear;
+		}
+
+		.logo img {
+			height: 26px;
+			width: auto;
+			display: block;
+		}
+
+		@media screen and (max-width: 991px) {
+
+			.menu-icon:checked+label,
+			.menu-icon:not(:checked)+label {
+				right: 55px;
+			}
+
+			.logo {
+				left: 30px;
+			}
+
+			.nav {
+				right: 30px;
+			}
+
+			h1 {
+				font-size: 9vw;
+				-webkit-text-stroke: 2px transparent;
+				text-stroke: 2px transparent;
+				-webkit-text-fill-color: #FEFEFA;
+				text-fill-color: #FEFEFA;
+				color: #FEFEFA;
+			}
+
+			.nav ul li a {
+				font-size: 8vh;
+			}
+		}
+
+		.container {
+			width: 90%;
+			max-width: 1200px;
+			margin: 50px auto;
+			background: #fff;
+			padding: 30px;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		h1,
+		h2 {
+			color: #202f79;
+			margin-bottom: 20px;
+			text-align: center;
+		}
+
+		p {
+			margin-bottom: 20px;
+			text-align: justify;
+		}
+
+		.section {
+			margin-bottom: 40px;
+			opacity: 0;
+			transform: translateY(20px);
+			transition: opacity 0.8s ease, transform 0.8s ease;
+		}
+
+		.section.active {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.footer {
+			text-align: center;
+			padding: 20px 0;
+			background-color: #e9e9e9;
+		}
+
+		@media (max-width: 768px) {
+			.container {
+				width: 95%;
+				padding: 20px;
+			}
+
+			h1 {
+				font-size: 2rem;
+			}
+
+			h2 {
+				font-size: 1.5rem;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 30px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" />
+		<label for="menu-icon"></label>
+		<nav class="nav">
+			<ul class="pt-5">
+				<li><a href="{% url 'home' %}">Home</a></li>
+				<li><a href="{% url 'AdminLogin' %}">Admin Login</a></li>
+				<li><a href="{% url 'UserLogin' %}">User Login</a></li>
+				<li><a href="{% url 'Aboutus' %}">About Us</a></li>
+				<li><a href="{% url 'Feedback' %}">Feedback</a></li>
+			</ul>
+		</nav>
+		<div class="container">
+			<h1 class="animate__animated animate__fadeIn">About Us</h1>
+
+			<div class="section" id="mission">
+				<h2>Our Mission</h2>
+				<p>In today's fast-paced digital world, job postings attract a massive influx of applications in a
+					remarkably short time. Manually sifting through these resumes is not only time-consuming and costly
+					but
+					also prone to human error, potentially overlooking qualified candidates. Our mission at Automated
+					Resume
+					Analysis is to address these challenges by providing an automated, efficient, and fair solution. We
+					aim
+					to revolutionize the hiring process by leveraging Natural Language Processing (NLP) to accurately
+					match
+					candidates with job requirements.</p>
+			</div>
+
+			<div class="section" id="problem">
+				<h2>The Challenge: Existing Systems</h2>
+				<p>Traditional hiring processes struggle to handle the sheer volume of applications. Manual resume
+					screening
+					is inefficient and can lead to overlooking suitable candidates or selecting unsuitable ones.
+					Existing
+					systems lack the ability to effectively extract and analyze relevant information from unstructured
+					resumes, leading to missed opportunities and increased hiring costs.</p>
+			</div>
+
+			<div class="section" id="solution">
+				<h2>Our Solution: Proposed System</h2>
+				<p>Our proposed system utilizes a powerful combination of Resume Parsing and the Spacy NLP API to
+					streamline
+					the hiring process. We automatically extract key details from resumes, including skills,
+					qualifications,
+					and personal information, eliminating the need for manual scanning. By employing vectorization
+					models
+					and cosine similarity, we accurately match resumes with job descriptions, calculating a score that
+					reflects the candidate's suitability. High-scoring applicants are then shortlisted for interviews,
+					ensuring that companies find the best talent efficiently.</p>
+			</div>
+
+			<div class="section" id="technology">
+				<h2>Our Technology</h2>
+				<p>Our system leverages cutting-edge NLP techniques to process and understand complex text data from
+					resumes. We utilize Resume Parser and the Spacy NLP API to extract relevant information, creating a
+					summarized and easily analyzable form of each application. Vectorization models and cosine
+					similarity
+					are then used to match resumes with job descriptions, providing a quantitative measure of candidate
+					suitability. This approach ensures accuracy and efficiency, allowing recruiters to make informed
+					decisions quickly.</p>
+			</div>
+
+			<div class="section" id="vision">
+				<h2>Our Vision</h2>
+				<p>We envision a future where talent acquisition is seamless and optimized, allowing companies to
+					quickly
+					identify and hire the best candidates. We believe our platform can play a crucial role in creating a
+					more equitable and efficient job market, where every individual has the opportunity to find their
+					ideal
+					career path. By automating the resume analysis and skill matching process, we aim to eliminate bias
+					and
+					ensure that every qualified candidate receives the consideration they deserve.</p>
+			</div>
+
+			<div class="section" id="contact">
+				<h2>Contact Us</h2>
+				<p>If you have any questions or feedback, please feel free to contact us at: <a
+						href="mailto:info@automatedresumeanalysis.com">info@automatedresumeanalysis.com</a></p>
+			</div>
+		</div>
+
+		<footer class="footer">
+			<p>&copy; 2024 Automated Resume Analysis. All Rights Reserved.</p>
+		</footer>
+
+		<script>
+			function revealSections() {
+				const sections = document.querySelectorAll('.section');
+				sections.forEach(section => {
+					const sectionTop = section.getBoundingClientRect().top;
+					const sectionBottom = section.getBoundingClientRect().bottom;
+					const windowHeight = window.innerHeight;
+
+					if (sectionTop < windowHeight - 100 && sectionBottom > 100) {
+						section.classList.add('active');
+					} else {
+						section.classList.remove('active');
+					}
+				});
+			}
+
+			window.addEventListener('scroll', revealSections);
+			revealSections();
+		</script>
+</body>
+
+</html>

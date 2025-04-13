@@ -1,0 +1,505 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - Upload Resume</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<script src="https://cdn.tailwindcss.com"></script>
+	<style>
+		/* Your existing styles */
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: #FAFCFE;
+			font-family: sans-serif;
+		}
+
+		.content {
+			display: grid;
+			grid-template-columns: 1fr;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		}
+
+		.form-container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		.button-row {
+			display: flex;
+			justify-content: center;
+			margin-top: 20px;
+			gap: 30px;
+		}
+
+		.gradient-button {
+			position: relative;
+			padding: 10px 20px;
+			font-size: 14px;
+			border: none;
+			border-radius: 25px;
+			background-color: white;
+			color: #333;
+			cursor: pointer;
+			overflow: hidden;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			margin: 5px;
+			text-decoration: none;
+			transition: transform 0.2s ease-in-out;
+		}
+
+		.gradient-button::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			border-radius: inherit;
+			padding: 3px;
+			background: linear-gradient(90deg, #5146BF, #F5FEFD, #5146BF);
+			background-size: 300% 100%;
+			-webkit-mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			mask:
+				linear-gradient(white 0 0) content-box,
+				linear-gradient(white 0 0);
+			-webkit-mask-composite: xor;
+			mask-composite: exclude;
+			animation: moveBorder 2s linear infinite alternate;
+		}
+
+		@keyframes moveBorder {
+			0% {
+				background-position: 0% 50%;
+			}
+
+			100% {
+				background-position: 100% 50%;
+			}
+		}
+
+		.gradient-button:hover {
+			transform: scale(1.05);
+		}
+
+		.has-mask {
+			position: absolute;
+			clip: rect(10px, 150px, 130px, 10px);
+		}
+
+		.upload-box {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			border: 4px dashed var(--accent-color-1);
+			border-radius: 10px;
+			padding: 20px;
+			height: 250px;
+			width: 550px;
+		}
+
+		.upload-box img {
+			max-width: 150px;
+			max-height: 150px;
+			margin-bottom: 5px;
+		}
+
+		.upload-box p {
+			font-size: 120px;
+			color: gray;
+		}
+
+		.upload-box input[type="file"] {
+			display: none;
+		}
+
+		/* Popup Styles */
+		.popup-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 1000;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease;
+		}
+
+		.popup-overlay.active {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.congratulations_card,
+		.error_card {
+			background-color: #eceff1;
+			border-radius: 30px;
+			text-align: center;
+			padding: 20px;
+			max-width: 375px;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.2);
+			position: relative;
+			transform: translateY(-50px);
+			opacity: 0;
+			transition: transform 0.3s ease, opacity 0.3s ease;
+		}
+
+		.popup-overlay.active .congratulations_card,
+		.popup-overlay.active .error_card {
+			transform: translateY(0);
+			opacity: 1;
+		}
+
+		.close {
+			position: absolute;
+			right: 32px;
+			top: 32px;
+			width: 32px;
+			height: 32px;
+			opacity: 0.3;
+			transition: opacity 0.2s ease, transform 0.2s ease;
+			cursor: pointer;
+		}
+
+		.close:hover {
+			opacity: 1;
+		}
+
+		.close:before,
+		.close:after {
+			position: absolute;
+			left: 15px;
+			content: ' ';
+			height: 33px;
+			width: 2px;
+			background-color: #333;
+		}
+
+		.close:before {
+			transform: rotate(45deg);
+		}
+
+		.close:after {
+			transform: rotate(-45deg);
+		}
+
+		.congratulations_card .ilustration,
+		.error_card .ilustration {
+			margin: 30px;
+		}
+
+		.congratulations_card .ilustration .gif-container,
+		.error_card .ilustration .gif-container {
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			overflow: hidden;
+			margin: 0 auto;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.congratulations_card .ilustration .gif-container img {
+			width: 100%;
+			height: 100%;
+			transform: scale(1.3);
+			object-fit: cover;
+		}
+
+		.error_card .ilustration .gif-container img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.congratulations_card h3,
+		.error_card h3 {
+			font-family: "Fredoka", sans-serif;
+			font-size: 2rem;
+			line-height: 2.2rem;
+			color: #1d2428;
+			font-weight: bold;
+			margin: 30px 0;
+		}
+
+		.congratulations_card p,
+		.error_card p {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1rem;
+			line-height: 1.3rem;
+			color: #5e7280;
+			margin: 30px auto;
+			max-width: 80%;
+		}
+
+		.congratulations_card button,
+		.error_card button {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1.1rem;
+			font-weight: bold;
+			padding: 15px 80px;
+			border-radius: 25px;
+			color: white;
+			border: 0;
+			margin: 30px 0;
+			outline: none;
+			background-color: var(--primary-color);
+			box-shadow: 10px 10px 10px var(--accent-color-2), -10px -10px 10px var(--accent-color-2), 0 0 5px rgba(0, 0, 0, 0.1);
+			transition: ease all 0.3s;
+			cursor: pointer;
+		}
+
+		.congratulations_card button:hover,
+		.error_card button:hover {
+			box-shadow: 20px 20px 20px var(--accent-color-2), -20px -20px 20px var(--accent-color-2), 0 0 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-3px);
+		}
+
+		.congratulations_card button:active,
+		.error_card button:active {
+			transform: scale(0.9);
+			box-shadow: inset -1px -1px 3px var(--primary-color), -20px -20px 20px rgba(136, 202, 139, 0);
+		}
+
+		.error_card button {
+			background-color: hsl(348, 83%, 47%);
+			/* Red for error */
+		}
+
+		.congratulations_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(36000deg);
+			/* Clockwise */
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+
+		.error_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(-36000deg);
+			/* Anti-clockwise */
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+	</style>
+	<script>
+		function validate() {
+			var x = document.forms["f1"]["t2"].value;
+			if (x == null || x == "") {
+				alert("Resume must be uploaded");
+				document.f1.t2.focus();
+				return false;
+			}
+			return true;
+		}
+
+		function displayFileName(input) {
+			const fileNameDisplay = document.getElementById('file-name-display');
+			if (input.files && input.files[0]) {
+				fileNameDisplay.textContent = 'Uploaded: ' + input.files[0].name;
+			} else {
+				fileNameDisplay.textContent = '';
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<div class="button-row">
+			<a href="{% url 'UserDashboard' %}" class="gradient-button">Dashboard</a>
+			<a href="{% url 'ViewJobs' %}" class="gradient-button">View Available Jobs</a>
+			<a href="{% url 'home' %}" class="gradient-button"
+				style="color: whitesmoke; background-color: #5146BF;">Logout</a>
+		</div>
+		<div class="container mt-4" style="max-width: 800px; padding: 20px;">
+			<div class="row justify-content-center">
+				<div class="content">
+					<div class="form-container">
+						<center>
+							<form name="f1" method="post" action="{% url 'UploadResumeAction' %}"
+								enctype="multipart/form-data" onsubmit="return validate()">
+								{% csrf_token %}
+								<h1 class="animate__animated animate__fadeIn"
+									style="font-size: 30px; color: var(--primary-color);">
+									<b>Upload Resume</b>
+								</h1>
+								<div class="mb-3" style="display: none;">
+									{{ data|safe }}
+								</div>
+								<div class="grid grid-cols-1 space-y-2">
+									<label class="text-sm font-bold text-gray-600 tracking-wide"
+										style="margin-top: 40px; color: var(--primary-color); font-size: 20px;">Job
+										Title</label>
+									<input
+										class="text-base p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 cursor-not-allowed"
+										type="text" name="job_title" value="{{ job_title }}"
+										style="color: var(--primary-color); text-align: center; font-size: 20px;"
+										readonly>
+								</div>
+								<div class=" grid grid-cols-1 space-y-2">
+									<label class="text-sm font-bold text-gray-600 tracking-wide"
+										style="margin-top: 20px; color: var(--primary-color); font-size: 20px;">Job
+										Description</label>
+									<textarea
+										class="text-base p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 cursor-not-allowed resize-none overflow-hidden flex items-center justify-center text-center"
+										name="job_title" readonly
+										style="color: var(--primary-color); font-size: 20px; width: 100%; min-height: 100px; height: auto; display: flex; align-items: center; text-align: center; vertical-align: middle; padding: 10px;"
+										oninput="this.style.height = 'auto'; this.style.height = (this.scrollHeight + 50) + 'px';"
+										onfocus="this.style.height = (this.scrollHeight + 50) + 'px';">{{ job_description }}</textarea>
+								</div>
+								<div class=" grid grid-cols-1 space-y-2">
+									<label class="text-sm font-bold text-gray-600 tracking-wide"
+										style="margin-top: 20px;margin-bottom: 10px; color: var(--primary-color); font-size: 20px;">Attach
+										Your Resume</label>
+									<div class="flex items-center justify-center w-full">
+										<label class="upload-box">
+											<img src="https://img.freepik.com/free-vector/image-upload-concept-landing-page_52683-27130.jpg?size=338&ext=jpg"
+												alt="Upload Image">
+											<p class="pointer-none text-gray-500 mt-3">
+												<span class="text-sm block">Drag and drop files here</span>
+												<span class="text-sm block">or</span>
+												<span class="text-sm block">
+													<a href="#" class="text-blue-600 hover:underline"
+														onclick="document.getElementById('file-upload').click(); return false;">
+														select a file
+													</a> from your computer
+												</span>
+											</p>
+											<input type="file" name="t2" id="file-upload"
+												onchange="displayFileName(this)">
+										</label>
+									</div>
+								</div>
+								<p class="text-sm " style="color: #5146BF;">
+									<span>File type: doc, pdf</span>
+								</p>
+								<p id="file-name-display" class="mt-2 text-sm text-gray-600"
+									style="color: hsl(348, 83%, 47%);">
+								</p>
+								<button type="submit" class="gradient-button mt-4">Submit Resume</button>
+							</form>
+							{% if resume_upload_status_message %}
+							{% if resume_upload_status %}
+							<div class="popup-overlay active" id="congratulationsPopup">
+								<div class="congratulations_card">
+									<div class="close" id="closeCongratulationPopup"></div>
+									<div class="ilustration">
+										<div class="gif-container">
+											<img src="{% static 'gifs/success.gif' %}" background-color="transparent"
+												alt="Congratulations GIF">
+										</div>
+									</div>
+									<h3>¡Congratulations!</h3>
+									<p>{{ resume_upload_status_message }}</p>
+									<p><b></b>Resume Score : {{ user_resume_score }}</p>
+									</p>
+									<button onclick="window.location.href='{% url 'UserDashboard' %}'">Continue</button>
+								</div>
+							</div>
+							{% else %}
+							<div class="popup-overlay active" id="errorPopup">
+								<div class="error_card">
+									<div class="close" id="closeErrorPopup"></div>
+									<div class="ilustration">
+										<div class="gif-container">
+											<img src="{% static 'gifs/error.gif' %}" background-color="transparent"
+												alt="Error GIF">
+										</div>
+									</div>
+									<h3>Oops! Something went wrong.</h3>
+									<p>{{ resume_upload_status_message }}</p>
+									<button onclick="window.location.href='{% url 'ViewJobs' %}'">Try Again</button>
+								</div>
+							</div>
+							{% endif %}
+							{% endif %}
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		const congratulationsPopup = document.getElementById('congratulationsPopup');
+		const closeCongratulationPopupBtn = document.getElementById('closeCongratulationPopup');
+
+		const errorPopup = document.getElementById('errorPopup');
+		const closeErrorPopupBtn = document.getElementById('closeErrorPopup');
+
+		if (congratulationsPopup) {
+			closeCongratulationPopupBtn.addEventListener('click', () => {
+				congratulationsPopup.classList.remove('active');
+			});
+
+			congratulationsPopup.addEventListener('click', (event) => {
+				if (event.target === congratulationsPopup) {
+					congratulationsPopup.classList.remove('active');
+				}
+			});
+		}
+		if (errorPopup) {
+			closeErrorPopupBtn.addEventListener('click', () => {
+				errorPopup.classList.remove('active');
+			});
+
+			errorPopup.addEventListener('click', (event) => {
+				if (event.target === errorPopup) {
+					errorPopup.classList.remove('active');
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

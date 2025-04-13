@@ -1,0 +1,831 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - Feedback</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: #hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		*,
+		*::before,
+		*::after {
+			box-sizing: border-box;
+		}
+
+		html {
+			height: 100%;
+			display: grid;
+			justify-content: center;
+			align-items: center;
+		}
+
+		body {
+			max-width: 60em;
+			color: var(--primary-color);
+			background-color: #FAFCFE;
+			font-family: sans-serif;
+		}
+
+		.content {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+		}
+
+		.form-container {
+			background-color: white;
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+		}
+
+		.image-container {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			background-color: var(--bg-color);
+		}
+
+		.image-container img {
+			height: auto;
+			max-width: 30em;
+			margin-bottom: 2em;
+		}
+
+		.tickmarks {
+			display: grid;
+			grid-template-columns: repeat(11, 1fr);
+			gap: 1.25em;
+			justify-items: center;
+			margin-top: 2.5em;
+			color: var(--accent-color-1);
+			font-size: 90%;
+			font-weight: bold;
+		}
+
+		.tickmarks .tickmark {
+			cursor: pointer;
+		}
+
+		.tickmarks .tickmark.highlight {
+			color: var(--primary-color);
+		}
+
+		#t2 {
+			display: block;
+			margin: 1em 0 1.5em 0;
+			width: 100%;
+			cursor: pointer;
+			-webkit-appearance: none;
+		}
+
+		#t2:focus {
+			outline: none;
+			box-shadow: 0 0 3px 3px var(--accent-color-1);
+		}
+
+		#t2::-webkit-slider-thumb {
+			--thumb-size: 1em;
+			margin-top: calc(var(--thumb-size) * -1 / 3);
+			height: var(--thumb-size);
+			width: var(--thumb-size);
+			background-color: var(--primary-color);
+			border-radius: 50%;
+			box-shadow: 0 0 0 5px var(--bg-color);
+			-webkit-appearance: none;
+		}
+
+		#t2::-webkit-slider-runnable-track {
+			height: 0.5em;
+			border-radius: 0.3em;
+			background-color: var(--bg-color);
+			background-image: linear-gradient(to right, var(--primary-color) var(--score, 0%), transparent var(--score, 0%));
+		}
+
+		#t2::-moz-range-thumb {
+			background-color: var(--primary-color);
+			border-radius: 50%;
+			border-color: var(--bg-color);
+			border-width: 5px;
+		}
+
+		#t2::-moz-range-track {
+			height: 0.5em;
+			border-radius: 0.3em;
+			background-color: var(--bg-color);
+			background-image: linear-gradient(to right, var(--primary-color) var(--score, 0%), transparent var(--score, 0%));
+		}
+
+		.legend {
+			display: flex;
+			justify-content: space-between;
+			margin: -0.2em 0 0;
+			font-size: 80%;
+			color: var(--accent-color-1);
+		}
+
+		.legend span {
+			cursor: pointer;
+		}
+
+		textarea[name="t1"] {
+			resize: none;
+			width: 100%;
+			height: 12em;
+			margin: 3em 0 2.5em;
+			padding: 1em;
+			border: none;
+			border-radius: 0.3em;
+			color: var(--secondary-color);
+			background-color: var(--bg-color);
+		}
+
+		textarea[name="t1"]::placeholder {
+			font-size: 110%;
+			color: var(--primary-color);
+			filter: opacity(45%);
+		}
+
+		textarea[name="t1"]:focus {
+			outline: none;
+			box-shadow: 0 0 3px 3px var(--accent-color-1);
+		}
+
+		button[type="submit"] {
+			width: 100%;
+			margin: 2em 0 1em;
+			padding: 0.7em 1em;
+			border: none;
+			border-radius: 0.5em;
+			color: var(--accent-color-2);
+			background-color: var(--primary-color);
+			font-size: 90%;
+			font-weight: 200;
+			transition: background-color 300ms ease;
+		}
+
+		button[type="submit"]:disabled {
+			color: var(--accent-color-1);
+			background-color: var(--bg-color);
+		}
+
+		button[type="submit"]:not(:disabled):hover {
+			background-color: var(--secondary-color);
+			cursor: pointer;
+		}
+
+		button[type="submit"]:not(:disabled):focus {
+			outline: none;
+			box-shadow: 0 0 5px 5px var(--accent-color-1);
+		}
+
+		#header {
+			background-color: var(--background);
+			color: white;
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: white;
+		}
+
+		[type="checkbox"]:checked,
+		[type="checkbox"]:not(:checked) {
+			position: absolute;
+			left: -9999px;
+		}
+
+		.menu-icon:checked+label,
+		.menu-icon:not(:checked)+label {
+			position: fixed;
+			top: 63px;
+			right: 75px;
+			display: block;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			z-index: 10;
+		}
+
+		.menu-icon:checked+label:before,
+		.menu-icon:not(:checked)+label:before {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 30px;
+			height: 20px;
+			z-index: 20;
+			top: 0;
+			left: 0;
+			border-top: 2px solid #353746;
+			border-bottom: 2px solid #353746;
+			transition: border-width 100ms 1500ms ease,
+				top 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after,
+		.menu-icon:not(:checked)+label:after {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 22px;
+			height: 2px;
+			z-index: 20;
+			top: 10px;
+			right: 4px;
+			background-color: #353746;
+			margin-top: -1px;
+			transition: width 100ms 1750ms ease,
+				right 100ms 1750ms ease,
+				margin-top 100ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:before {
+			top: 10px;
+			transform: rotate(45deg);
+			height: 2px;
+			background-color: #353746;
+			border-width: 0;
+			transition: border-width 100ms 340ms ease,
+				top 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after {
+			width: 30px;
+			margin-top: 0;
+			right: 0;
+			transform: rotate(-45deg);
+			transition: width 100ms ease,
+				right 100ms ease,
+				margin-top 100ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav {
+			position: fixed;
+			top: 33px;
+			right: 50px;
+			display: block;
+			width: 80px;
+			height: 80px;
+			padding: 0;
+			margin: 0;
+			z-index: 9;
+			overflow: hidden;
+			box-shadow: 0 8px 30px 0 #353746;
+			background-color: #FEFEFA;
+			animation: border-transform 7s linear infinite;
+			transition: top 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 1100ms ease,
+				width 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		@keyframes border-transform {
+
+			0%,
+			100% {
+				border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+			}
+
+			14% {
+				border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%;
+			}
+
+			28% {
+				border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%;
+			}
+
+			42% {
+				border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%;
+			}
+
+			56% {
+				border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%;
+			}
+
+			70% {
+				border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%;
+			}
+
+			84% {
+				border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%;
+			}
+		}
+
+		.menu-icon:checked~.nav {
+			animation-play-state: paused;
+			top: 50%;
+			right: 50%;
+			transform: translate(50%, -50%);
+			width: 200%;
+			height: 200%;
+			transition: top 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 700ms ease,
+				width 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav ul {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 0;
+			z-index: 6;
+			text-align: center;
+			transform: translateY(-50%);
+			list-style: none;
+		}
+
+		.nav ul li {
+			position: relative;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 10px 0;
+			text-align: center;
+			list-style: none;
+			pointer-events: none;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(30px);
+			transition: all 250ms linear;
+		}
+
+		.nav ul li:nth-child(1) {
+			transition-delay: 200ms;
+		}
+
+		.nav ul li:nth-child(2) {
+			transition-delay: 150ms;
+		}
+
+		.nav ul li:nth-child(3) {
+			transition-delay: 100ms;
+		}
+
+		.nav ul li:nth-child(4) {
+			transition-delay: 50ms;
+		}
+
+		.nav ul li a {
+			font-family: 'Montserrat', sans-serif;
+			font-size: 9vh;
+			text-transform: uppercase;
+			line-height: 1.2;
+			font-weight: 800;
+			display: inline-block;
+			position: relative;
+			color: #353746;
+			transition: all 250ms linear;
+			text-decoration: none;
+		}
+
+		.nav ul li a:hover {
+			text-decoration: none;
+			color: #353746;
+		}
+
+		.nav ul li a:after {
+			display: block;
+			position: absolute;
+			top: 50%;
+			content: '';
+			height: 2vh;
+			margin-top: -1vh;
+			width: 0left: 0;
+			background-color: #F5FEFD;
+			opacity: 0.8;
+			transition: width 250ms linear;
+		}
+
+		.nav ul li a:hover:after {
+			width: 100%;
+		}
+
+
+		.menu-icon:checked~.nav ul li {
+			pointer-events: auto;
+			visibility: visible;
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 350ms ease,
+				transform 250ms ease;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(1) {
+			transition-delay: 1400ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(2) {
+			transition-delay: 1480ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(3) {
+			transition-delay: 1560ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(4) {
+			transition-delay: 1640ms;
+		}
+
+		.logo {
+			position: absolute;
+			top: 60px;
+			left: 50px;
+			display: block;
+			z-index: 11;
+			transition: all 250ms linear;
+		}
+
+		.logo img {
+			height: 26px;
+			width: auto;
+			display: block;
+		}
+
+		@media screen and (max-width: 991px) {
+
+			.menu-icon:checked+label,
+			.menu-icon:not(:checked)+label {
+				right: 55px;
+			}
+
+			.logo {
+				left: 30px;
+			}
+
+			.nav {
+				right: 30px;
+			}
+
+			h1 {
+				font-size: 9vw;
+				-webkit-text-stroke: 2px transparent;
+				text-stroke: 2px transparent;
+				-webkit-text-fill-color: #FEFEFA;
+				text-fill-color: #FEFEFA;
+				color: #FEFEFA;
+			}
+
+			.nav ul li a {
+				font-size: 8vh;
+			}
+		}
+
+		/* Popup Styles */
+		.popup-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 1000;
+			opacity: 0;
+			visibility: hidden;
+			transition: opacity 0.3s ease;
+		}
+
+		.popup-overlay.active {
+			opacity: 1;
+			visibility: visible;
+		}
+
+		.congratulations_card,
+		.error_card {
+			background-color: #eceff1;
+			border-radius: 30px;
+			text-align: center;
+			padding: 20px;
+			max-width: 375px;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 20px rgba(0, 0, 0, 0.2);
+			position: relative;
+			transform: translateY(-50px);
+			opacity: 0;
+			transition: transform 0.3s ease, opacity 0.3s ease;
+		}
+
+		.popup-overlay.active .congratulations_card,
+		.popup-overlay.active .error_card {
+			transform: translateY(0);
+			opacity: 1;
+		}
+
+		.close {
+			position: absolute;
+			right: 32px;
+			top: 32px;
+			width: 32px;
+			height: 32px;
+			opacity: 0.3;
+			transition: opacity 0.2s ease, transform 0.2s ease;
+			cursor: pointer;
+		}
+
+		.close:hover {
+			opacity: 1;
+		}
+
+		.close:before,
+		.close:after {
+			position: absolute;
+			left: 15px;
+			content: ' ';
+			height: 33px;
+			width: 2px;
+			background-color: #333;
+		}
+
+		.close:before {
+			transform: rotate(45deg);
+		}
+
+		.close:after {
+			transform: rotate(-45deg);
+		}
+
+		.congratulations_card .ilustration,
+		.error_card .ilustration {
+			margin: 30px;
+		}
+
+		.congratulations_card .ilustration .gif-container,
+		.error_card .ilustration .gif-container {
+			width: 200px;
+			height: 200px;
+			border-radius: 100%;
+			overflow: hidden;
+			margin: 0 auto;
+			box-shadow: 15px 15px 20px rgba(0, 0, 0, 0.1), 15px 15px 20px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 0, 0, 0.1);
+		}
+
+		.congratulations_card .ilustration .gif-container img {
+			width: 100%;
+			height: 100%;
+			transform: scale(1.3);
+			object-fit: cover;
+		}
+
+		.error_card .ilustration .gif-container img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+
+		.congratulations_card h3,
+		.error_card h3 {
+			font-family: "Fredoka", sans-serif;
+			font-size: 2rem;
+			line-height: 2.2rem;
+			color: #1d2428;
+			font-weight: bold;
+			margin: 30px 0;
+		}
+
+		.congratulations_card p,
+		.error_card p {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1rem;
+			line-height: 1.3rem;
+			color: #5e7280;
+			margin: 30px auto;
+			max-width: 80%;
+		}
+
+		.congratulations_card button,
+		.error_card button {
+			font-family: "Fredoka", sans-serif;
+			font-size: 1.1rem;
+			font-weight: bold;
+			padding: 15px 80px;
+			border-radius: 25px;
+			color: white;
+			border: 0;
+			margin: 30px 0;
+			outline: none;
+			background-color: var(--primary-color);
+			box-shadow: 10px 10px 10px var(--accent-color-2), -10px -10px 10px var(--accent-color-2), 0 0 5px rgba(0, 0, 0, 0.1);
+			transition: ease all 0.3s;
+			cursor: pointer;
+		}
+
+		.congratulations_card button:hover,
+		.error_card button:hover {
+			box-shadow: 20px 20px 20px var(--accent-color-2), -20px -20px 20px var(--accent-color-2), 0 0 8px rgba(0, 0, 0, 0.1);
+			transform: translateY(-3px);
+		}
+
+		.congratulations_card button:active,
+		.error_card button:active {
+			transform: scale(0.9);
+			box-shadow: inset -1px -1px 3px var(--primary-color), -20px -20px 20px rgba(136, 202, 139, 0);
+		}
+
+		.error_card button {
+			background-color: hsl(348, 83%, 47%);
+			/* Red for error */
+		}
+
+		.congratulations_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(36000deg);
+			/* Clockwise */
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+
+		.error_card .close:hover {
+			opacity: 1;
+			transform: scale(1.3) rotate(-36000deg);
+			/* Anti-clockwise */
+			transition: opacity 0.2s ease, transform 300s linear;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn" style="font-size: 37px; color: #202f79;">
+					Automated Resume Analysis And Skill Matching With NLP</h1>
+			</div>
+		</div>
+		<input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" />
+		<label for="menu-icon"></label>
+		<nav class="nav">
+			<ul class="pt-5">
+				<li><a href="{% url 'home' %}">Home</a></li>
+				<li><a href="{% url 'AdminLogin' %}">Admin Login</a></li>
+				<li><a href="{% url 'UserLogin' %}">User Login</a></li>
+				<li><a href="{% url 'Aboutus' %}">About Us</a></li>
+				<li><a href="{% url 'Feedback' %}">Feedback</a></li>
+			</ul>
+		</nav>
+
+
+		<div class="container mt-4">
+			<div class="row justify-content-center">
+				<div class="content">
+					<div class="image-container">
+						<img src="{% static 'images/feedback.png' %}" alt="Feedback Image">
+					</div>
+					<div class="form-container">
+						<center>
+							<form name="f1" method="post" action="{% url 'FeedbackAction' %}">
+								{% csrf_token %}
+								<h3><b>Give Your Feedback</b></h3>
+								<p class="text-danger">{{ data }}</p>
+								<label>
+									<h2>How satisfied are you overall with our service?</h2>
+									<div class="tickmarks">
+										<span class="tickmark" data-value="0">0</span>
+										<span class="tickmark" data-value="1">1</span>
+										<span class="tickmark" data-value="2">2</span>
+										<span class="tickmark" data-value="3">3</span>
+										<span class="tickmark" data-value="4">4</span>
+										<span class="tickmark" data-value="5">5</span>
+										<span class="tickmark" data-value="6">6</span>
+										<span class="tickmark" data-value="7">7</span>
+										<span class="tickmark" data-value="8">8</span>
+										<span class="tickmark" data-value="9">9</span>
+										<span class="tickmark" data-value="10">10</span>
+									</div>
+
+									<input type="range" name="t2" id="t2" max="10" value="5" style="--score: 50%">
+
+									<div class="legend">
+										<span onclick="setScore(0)">Not at all likely</span>
+										<span onclick="setScore(10)">Extremely likely</span>
+									</div>
+								</label>
+
+								<textarea name="t1" cols="30" rows="10"
+									placeholder="Please tell us your reasons for giving this score here..."></textarea>
+
+								<button type="submit" class="btn btn-primary">Send Feedback</button>
+							</form>
+							{% if Feedback_status_message %}
+							{% if Feedback_status %}
+							<div class="popup-overlay active" id="congratulationsPopup">
+								<div class="congratulations_card">
+									<div class="close" id="closeCongratulationPopup"></div>
+									<div class="ilustration">
+										<div class="gif-container">
+											<img src="{% static 'gifs/success.gif' %}" background-color="transparent"
+												alt="Congratulations GIF">
+										</div>
+									</div>
+									<h3>Feedback Sent Successfully!</h3>
+									<p>{{ Feedback_status_message }}</p>
+									<button onclick="window.location.href='{% url 'home' %}'">Continue</button>
+								</div>
+							</div>
+							{% else %}
+							<div class="popup-overlay active" id="errorPopup">
+								<div class="error_card">
+									<div class="close" id="closeErrorPopup"></div>
+									<div class="ilustration">
+										<div class="gif-container">
+											<img src="{% static 'gifs/error.gif' %}" background-color="transparent"
+												alt="Error GIF">
+										</div>
+									</div>
+									<h3>Oops! Something went wrong.</h3>
+									<p>{{ Feedback_status_message }}</p>
+									<button onclick="window.location.href='{% url 'Feedback' %}'">Try Again</button>
+								</div>
+							</div>
+							{% endif %}
+							{% endif %}
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script>
+		const slider = document.getElementById('t2');
+		const tickmarks = document.querySelectorAll('.tickmark');
+
+		slider.addEventListener('input', function () {
+			this.style.setProperty('--score', `${this.value * 10}%`);
+
+			tickmarks.forEach(tick => {
+				tick.classList.remove('highlight');
+				if (parseInt(tick.dataset.value) === parseInt(this.value)) {
+					tick.classList.add('highlight');
+				}
+			});
+
+		});
+
+		function setScore(value) {
+			slider.value = value;
+			slider.dispatchEvent(new Event('input')); // Trigger input event to update visual
+		}
+
+		const congratulationsPopup = document.getElementById('congratulationsPopup');
+		const closeCongratulationPopupBtn = document.getElementById('closeCongratulationPopup');
+
+		const errorPopup = document.getElementById('errorPopup');
+		const closeErrorPopupBtn = document.getElementById('closeErrorPopup');
+
+		if (congratulationsPopup) {
+			closeCongratulationPopupBtn.addEventListener('click', () => {
+				congratulationsPopup.classList.remove('active');
+			});
+
+			congratulationsPopup.addEventListener('click', (event) => {
+				if (event.target === congratulationsPopup) {
+					congratulationsPopup.classList.remove('active');
+				}
+			});
+		}
+		if (errorPopup) {
+			closeErrorPopupBtn.addEventListener('click', () => {
+				errorPopup.classList.remove('active');
+			});
+
+			errorPopup.addEventListener('click', (event) => {
+				if (event.target === errorPopup) {
+					errorPopup.classList.remove('active');
+				}
+			});
+		}
+	</script>
+</body>
+
+</html>

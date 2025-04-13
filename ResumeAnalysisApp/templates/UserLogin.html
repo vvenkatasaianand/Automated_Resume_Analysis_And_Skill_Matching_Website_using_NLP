@@ -1,0 +1,553 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Automated Resume Analysis And Skill Matching With NLP - User Login</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+	<style>
+		/* Your existing CSS (including glassmorphism styles) */
+		:root {
+			--bg-color: hsl(230, 58%, 93%);
+			--primary-color: hsl(230, 58%, 30%);
+			--secondary-color: hsl(232, 47%, 50%);
+			--accent-color-1: hsl(230, 58%, 75%);
+			--accent-color-2: hsl(210, 66.7%, 98.8%);
+			--background: hsl(230, 58%, 93%);
+			--color: #ffffff;
+		}
+
+		body {
+			font-family: Georgia, serif;
+			background: var(--background);
+			color: var(--color);
+			margin: 0;
+			box-sizing: border-box;
+			letter-spacing: 1px;
+			transition: background 0.2s ease;
+		}
+
+		a {
+			text-decoration: none;
+			color: var(--color);
+		}
+
+		h1 {
+			font-size: 2.5rem;
+		}
+
+		/* Add these styles for header and menu */
+		#header {
+			color: var(--primary-color);
+			padding: 20px 0;
+			text-align: center;
+		}
+
+		#header h1 {
+			color: var(--primary-color);
+			font-size: 37px;
+		}
+
+		/* Glassmorphism Styles Modified */
+		.glass-container {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 80px 20px 20px 20px;
+		}
+
+		.login-container {
+			position: relative;
+			width: 25.2rem;
+		}
+
+		.form-container {
+			border: 1px solid hsla(0, 0%, 65%, 0.158);
+			box-shadow: 0 0 36px 1px rgba(0, 0, 0, 0.2);
+			border-radius: 10px;
+			backdrop-filter: blur(20px);
+			z-index: 99;
+			padding: 2rem;
+		}
+
+		.form-container input {
+			display: block;
+			padding: 14.5px;
+			width: 100%;
+			margin: 2rem 0;
+			color: var(--secondary-color);
+			outline: none;
+			background-color: #9191911f;
+			border: none;
+			border-radius: 5px;
+			font-weight: 500;
+			letter-spacing: 0.8px;
+			font-size: 15px;
+			backdrop-filter: blur(15px);
+		}
+
+		.form-container input:focus {
+			box-shadow: 0 0 16px 1px rgba(0, 0, 0, 0.2);
+			animation: wobble 0.3s ease-in;
+		}
+
+		.form-container button {
+			background-color: var(--primary-color);
+			color: var(--color);
+			display: block;
+			padding: 13px;
+			border-radius: 5px;
+			outline: none;
+			font-size: 18px;
+			letter-spacing: 1.5px;
+			font-weight: bold;
+			width: 100%;
+			cursor: pointer;
+			margin-bottom: 1rem;
+			transition: all 0.1s ease-in-out;
+			border: none;
+		}
+
+		.form-container button:hover {
+			box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.15);
+			transform: scale(1.02);
+		}
+
+		.circle {
+			width: 8rem;
+			height: 8rem;
+			background: var(--primary-color);
+			border-radius: 50%;
+			position: absolute;
+		}
+
+		.illustration {
+			position: absolute;
+			top: -14%;
+			right: -2px;
+			width: 90%;
+		}
+
+		.circle-one {
+			top: 0;
+			left: 0;
+			z-index: -1;
+			transform: translate(-45%, -45%);
+		}
+
+		.circle-two {
+			bottom: 0;
+			right: 0;
+			z-index: -1;
+			transform: translate(45%, 45%);
+		}
+
+		.register-forget {
+			margin: 1rem 0;
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.opacity {
+			opacity: 0.6;
+		}
+
+		.theme-btn-container {
+			position: absolute;
+			left: 0;
+			bottom: 2rem;
+		}
+
+		@keyframes wobble {
+			0% {
+				transform: scale(1.025);
+			}
+
+			25% {
+				transform: scale(1);
+			}
+
+			75% {
+				transform: scale(1.025);
+			}
+
+			100% {
+				transform: scale(1);
+			}
+		}
+
+		.register-link {
+			text-align: center;
+			margin: 1rem 0;
+			color: var(--color);
+			opacity: 0.6;
+		}
+
+		.register-link a {
+			color: var(--secondary-color);
+			text-decoration: none;
+			text-transform: uppercase;
+		}
+
+		/* Menu Styles from memu.html */
+		[type="checkbox"]:checked,
+		[type="checkbox"]:not(:checked) {
+			position: absolute;
+			left: -9999px;
+		}
+
+		.menu-icon:checked+label,
+		.menu-icon:not(:checked)+label {
+			position: fixed;
+			top: 63px;
+			right: 75px;
+			display: block;
+			width: 30px;
+			height: 30px;
+			padding: 0;
+			margin: 0;
+			cursor: pointer;
+			z-index: 10;
+		}
+
+		.menu-icon:checked+label:before,
+		.menu-icon:not(:checked)+label:before {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 30px;
+			height: 20px;
+			z-index: 20;
+			top: 0;
+			left: 0;
+			border-top: 2px solid #353746;
+			border-bottom: 2px solid #353746;
+			transition: border-width 100ms 1500ms ease,
+				top 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 1600ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after,
+		.menu-icon:not(:checked)+label:after {
+			position: absolute;
+			content: '';
+			display: block;
+			width: 22px;
+			height: 2px;
+			z-index: 20;
+			top: 10px;
+			right: 4px;
+			background-color: #353746;
+			margin-top: -1px;
+			transition: width 100ms 1750ms ease,
+				right 100ms 1750ms ease,
+				margin-top 100ms ease,
+				transform 200ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:before {
+			top: 10px;
+			transform: rotate(45deg);
+			height: 2px;
+			background-color: #353746;
+			border-width: 0;
+			transition: border-width 100ms 340ms ease,
+				top 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 100ms 300ms cubic-bezier(0.23, 1, 0.32, 1),
+				background-color 200ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.menu-icon:checked+label:after {
+			width: 30px;
+			margin-top: 0;
+			right: 0;
+			transform: rotate(-45deg);
+			transition: width 100ms ease,
+				right 100ms ease,
+				margin-top 100ms 500ms ease,
+				transform 200ms 1700ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav {
+			position: fixed;
+			top: 33px;
+			right: 50px;
+			display: block;
+			width: 80px;
+			height: 80px;
+			padding: 0;
+			margin: 0;
+			z-index: 9;
+			overflow: hidden;
+			box-shadow: 0 8px 30px 0 #353746;
+			background-color: #FEFEFA;
+			animation: border-transform 7s linear infinite;
+			transition: top 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 1100ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 1100ms ease,
+				width 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 650ms 400ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		@keyframes border-transform {
+
+			0%,
+			100% {
+				border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+			}
+
+			14% {
+				border-radius: 40% 60% 54% 46% / 49% 60% 40% 51%;
+			}
+
+			28% {
+				border-radius: 54% 46% 38% 62% / 49% 70% 30% 51%;
+			}
+
+			42% {
+				border-radius: 61% 39% 55% 45% / 61% 38% 62% 39%;
+			}
+
+			56% {
+				border-radius: 61% 39% 67% 33% / 70% 50% 50% 30%;
+			}
+
+			70% {
+				border-radius: 50% 50% 34% 66% / 56% 68% 32% 44%;
+			}
+
+			84% {
+				border-radius: 46% 54% 50% 50% / 35% 61% 39% 65%;
+			}
+		}
+
+		.menu-icon:checked~.nav {
+			animation-play-state: paused;
+			top: 50%;
+			right: 50%;
+			transform: translate(50%, -50%);
+			width: 200%;
+			height: 200%;
+			transition: top 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				right 350ms 700ms cubic-bezier(0.23, 1, 0.32, 1),
+				transform 250ms 700ms ease,
+				width 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1),
+				height 750ms 1000ms cubic-bezier(0.23, 1, 0.32, 1);
+		}
+
+		.nav ul {
+			position: absolute;
+			top: 50%;
+			left: 0;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 0;
+			z-index: 6;
+			text-align: center;
+			transform: translateY(-50%);
+			list-style: none;
+		}
+
+		.nav ul li {
+			position: relative;
+			display: block;
+			width: 100%;
+			padding: 0;
+			margin: 10px 0;
+			text-align: center;
+			list-style: none;
+			pointer-events: none;
+			opacity: 0;
+			visibility: hidden;
+			transform: translateY(30px);
+			transition: all 250ms linear;
+		}
+
+		.nav ul li:nth-child(1) {
+			transition-delay: 200ms;
+		}
+
+		.nav ul li:nth-child(2) {
+			transition-delay: 150ms;
+		}
+
+		.nav ul li:nth-child(3) {
+			transition-delay: 100ms;
+		}
+
+		.nav ul li:nth-child(4) {
+			transition-delay: 50ms;
+		}
+
+		.nav ul li a {
+			font-family: 'Montserrat', sans-serif;
+			font-size: 9vh;
+			text-transform: uppercase;
+			line-height: 1.2;
+			font-weight: 800;
+			display: inline-block;
+			position: relative;
+			color: #353746;
+			transition: all 250ms linear;
+			text-decoration: none;
+		}
+
+		.nav ul li a:hover {
+			text-decoration: none;
+			color: #353746;
+		}
+
+		.nav ul li a:after {
+			display: block;
+			position: absolute;
+			top: 50%;
+			content: '';
+			height: 2vh;
+			margin-top: -1vh;
+			width: 0;
+			left: 0;
+			background-color: #F5FEFD;
+			opacity: 0.8;
+			transition: width 250ms linear;
+		}
+
+		.nav ul li a:hover:after {
+			width: 100%;
+		}
+
+
+		.menu-icon:checked~.nav ul li {
+			pointer-events: auto;
+			visibility: visible;
+			opacity: 1;
+			transform: translateY(0);
+			transition: opacity 350ms ease,
+				transform 250ms ease;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(1) {
+			transition-delay: 1400ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(2) {
+			transition-delay: 1480ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(3) {
+			transition-delay: 1560ms;
+		}
+
+		.menu-icon:checked~.nav ul li:nth-child(4) {
+			transition-delay: 1640ms;
+		}
+
+
+
+		.logo {
+			position: absolute;
+			top: 60px;
+			left: 50px;
+			display: block;
+			z-index: 11;
+			transition: all 250ms linear;
+		}
+
+		.logo img {
+			height: 26px;
+			width: auto;
+			display: block;
+		}
+
+
+
+		@media screen and (max-width: 991px) {
+
+			.menu-icon:checked+label,
+			.menu-icon:not(:checked)+label {
+				right: 55px;
+			}
+
+			.logo {
+				left: 30px;
+			}
+
+			.nav {
+				right: 30px;
+			}
+
+			h1 {
+				font-size: 9vw;
+				-webkit-text-stroke: 2px transparent;
+				text-stroke: 2px transparent;
+				-webkit-text-fill-color: #FEFEFA;
+				text-fill-color: #FEFEFA;
+				color: #FEFEFA;
+			}
+
+			.nav ul li a {
+				font-size: 8vh;
+			}
+		}
+	</style>
+	<script>
+		/* Your existing validate() function */
+	</script>
+</head>
+
+<body>
+
+	<div id="wrapper">
+		<div id="header">
+			<div id="logo">
+				<h1 class="animate__animated animate__fadeIn">Automated Resume Analysis And Skill
+					Matching With NLP</h1>
+			</div>
+		</div>
+		<input class="menu-icon" type="checkbox" id="menu-icon" name="menu-icon" />
+		<label for="menu-icon"></label>
+		<nav class="nav">
+			<ul class="pt-5">
+				<li><a href="{% url 'home' %}">Home</a></li>
+				<li><a href="{% url 'AdminLogin' %}">Admin Login</a></li>
+				<li><a href="{% url 'UserLogin' %}">User Login</a></li>
+				<li><a href="{% url 'Aboutus' %}">About Us</a></li>
+				<li><a href="{% url 'Feedback' %}">Feedback</a></li>
+			</ul>
+		</nav>
+		<div class="glass-container">
+			<div class="login-container">
+				<div class="circle circle-one"></div>
+				<div class="form-container">
+					<img src="{% static 'images/illustration.png' %}" alt="illustration" class="illustration" />
+					<!-- <img src="https://raw.githubusercontent.com/hicodersofficial/glassmorphism-login-form/master/assets/illustration.png"
+						alt="illustration" class="illustration" /> -->
+					<h1 style="color: var(--primary-color);">LOGIN</h1>
+					<form name="f1" method="post" action="{% url 'UserLoginAction' %}" onsubmit="return validate()">
+						{% csrf_token %}
+						<p class="text-danger">{{ data }}</p>
+						<input type="text" name="username" id="username" placeholder="USERNAME" />
+						<input type="password" name="password" id="password" placeholder="PASSWORD" />
+						<button type="submit" class="opacity">SUBMIT</button>
+						<div class="register-link">
+							<a href="{% url 'Signup' %}">REGISTER</a>
+						</div>
+					</form>
+				</div>
+				<div class="circle circle-two"></div>
+			</div>
+			<div class="theme-btn-container"></div>
+		</div>
+	</div>
+	<script>
+		/* Your existing theme switching script */
+	</script>
+</body>
+
+</html>
