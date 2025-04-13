@@ -16,7 +16,7 @@
 
 <img src="Documentations/Screens/Main Screens/6.FeedBack Page.png" alt="project-screenshot" >
 
-<h5>Admin Screens</h5>
+<h3>Admin Screens</h3>
 
 <img src="https://github.com/vvenkatasaianand/Automated_Resume_Analysis_And_Skill_Matching_Website_using_NLP/blob/main/Documentations/Screens/Admin%20Screens/1.Admin%20DashBoard.png" alt="project-screenshot" >
 
@@ -24,7 +24,7 @@
 
 <img src="Documentations/Screens/Admin Screens/8.FeedBack View Page.png" alt="project-screenshot" >
 
-<h5>User Screens</h5>
+<h3>User Screens</h3>
 
 <img src="Documentations/Screens/User Screens/1.User DashBoard.png" alt="project-screenshot" >
 
