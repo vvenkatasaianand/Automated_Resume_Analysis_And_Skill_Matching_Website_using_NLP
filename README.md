@@ -6,6 +6,6 @@
 
 <h2>Project Screenshots:</h2>
 
-<img src="https://github.com/vvenkatasaianand/Automated_Resume_Analysis_And_Skill_Matching_Website_using_NLP/blob/main/Documentations/Screens/Main%20Screens/1.Home%20Screen.png" alt="project-screenshot" width="500" height="500/">
+<img src="https://github.com/vvenkatasaianand/Automated_Resume_Analysis_And_Skill_Matching_Website_using_NLP/blob/main/Documentations/Screens/Main%20Screens/1.Home%20Screen.png" alt="project-screenshot" width="400" height="400/">
 
-<img src="Documentations/Screens/Main Screens/2.Admin Login.png" alt="project-screenshot" width="500" height="500/">
+<img src="Documentations/Screens/Main Screens/2.Admin Login.png" alt="project-screenshot" width="400" height="400/">
